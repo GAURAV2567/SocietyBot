@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SocietyBot — Pricing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #0D1B2A;
+    --navy-mid:#1A2E44;
+    --navy-lt: #1E3A5F;
+    --green:   #25D366;
+    --green-dk:#128C7E;
+    --gold:    #F5A623;
+    --white:   #FFFFFF;
+    --off:     #F4F7FA;
+    --gray:    #6B8299;
+    --card-bg: #132338;
+    --red:     #E74C3C;
+    --blue:    #3498DB;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(16px);
+    background: rgba(13,27,42,0.92);
+  }
+  .logo { display: flex; align-items: center; gap: 0.6rem; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
+  .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green); display: inline-block; }
+  .nav-pill {
+    background: var(--green); color: var(--navy); font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.78rem; padding: 0.5rem 1.2rem;
+    border-radius: 100px; border: none; cursor: pointer; letter-spacing: 0.03em;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .nav-pill:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,211,102,0.3); }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center; padding: 5rem 2rem 3rem;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(37,211,102,0.12) 0%, transparent 65%);
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(37,211,102,0.1); border: 1px solid rgba(37,211,102,0.25);
+    color: var(--green); font-size: 0.8rem; font-weight: 500;
+    padding: 0.4rem 1rem; border-radius: 100px; margin-bottom: 1.5rem;
+    letter-spacing: 0.04em;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(2.4rem, 5vw, 4rem); line-height: 1.1;
+    margin-bottom: 1rem; letter-spacing: -0.02em;
+  }
+  .hero h1 span { color: var(--green); }
+  .hero p { color: var(--gray); font-size: 1.1rem; max-width: 520px; margin: 0 auto 2rem; line-height: 1.6; }
+
+  /* Toggle */
+  .toggle-wrap { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 3.5rem; }
+  .toggle-label { font-size: 0.9rem; color: var(--gray); }
+  .toggle-label.active { color: var(--white); font-weight: 500; }
+  .toggle {
+    width: 48px; height: 26px; background: var(--green-dk); border-radius: 100px;
+    border: none; cursor: pointer; position: relative; transition: background 0.2s;
+  }
+  .toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 20px; height: 20px; border-radius: 50%; background: white;
+    transition: transform 0.2s; transform: translateX(0);
+  }
+  .toggle.annual::after { transform: translateX(22px); }
+  .toggle.annual { background: var(--green); }
+  .save-badge {
+    background: rgba(245,166,35,0.15); border: 1px solid rgba(245,166,35,0.3);
+    color: var(--gold); font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem;
+    border-radius: 100px; letter-spacing: 0.03em;
+  }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    text-align: center; margin: 0 auto 2rem;
+    font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray);
+    display: flex; align-items: center; gap: 1rem; justify-content: center;
+  }
+  .section-label::before, .section-label::after {
+    content: ''; flex: 1; max-width: 80px; height: 1px;
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* ── SAAS CARDS ── */
+  .saas-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem; max-width: 1100px; margin: 0 auto; padding: 0 2rem;
+  }
+
+  @media(max-width: 900px) { .saas-grid { grid-template-columns: repeat(2,1fr); } }
+  @media(max-width: 550px) { .saas-grid { grid-template-columns: 1fr; } }
+
+  .plan-card {
+    background: var(--card-bg); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 18px; padding: 1.75rem 1.5rem; position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .plan-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+  .plan-card.popular {
+    border-color: var(--green); background: var(--navy-lt);
+    box-shadow: 0 0 0 1px var(--green), 0 20px 60px rgba(37,211,102,0.12);
+  }
+
+  .popular-badge {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: var(--navy); font-family: 'Syne', sans-serif;
+    font-size: 0.67rem; font-weight: 800; padding: 0.25rem 0.9rem;
+    border-radius: 100px; letter-spacing: 0.08em; white-space: nowrap;
+  }
+
+  .plan-color-bar { height: 3px; border-radius: 3px; margin-bottom: 1.4rem; }
+  .plan-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.3rem; }
+  .plan-tagline { color: var(--gray); font-size: 0.8rem; margin-bottom: 1.2rem; }
+
+  .plan-price {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 2.4rem; line-height: 1; margin-bottom: 0.25rem; letter-spacing: -0.03em;
+  }
+  .plan-price sup { font-size: 1.1rem; vertical-align: super; }
+  .plan-period { color: var(--gray); font-size: 0.82rem; margin-bottom: 1.4rem; }
+  .plan-period s { color: rgba(107,130,153,0.5); }
+
+  .plan-cta {
+    width: 100%; padding: 0.7rem; border-radius: 10px; border: none;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
+    cursor: pointer; letter-spacing: 0.03em; margin-bottom: 1.4rem;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .plan-cta:hover { transform: translateY(-1px); }
+  .plan-cta.primary { background: var(--green); color: var(--navy); }
+  .plan-cta.primary:hover { box-shadow: 0 6px 20px rgba(37,211,102,0.3); }
+  .plan-cta.secondary { background: rgba(255,255,255,0.07); color: var(--white); border: 1px solid rgba(255,255,255,0.12); }
+  .plan-cta.secondary:hover { background: rgba(255,255,255,0.11); }
+  .plan-cta.outline { background: transparent; color: var(--gold); border: 1.5px solid var(--gold); }
+  .plan-cta.outline:hover { background: rgba(245,166,35,0.08); }
+
+  .plan-divider { height: 1px; background: rgba(255,255,255,0.07); margin-bottom: 1.2rem; }
+  .plan-limits { margin-bottom: 1.2rem; }
+  .limit-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 0.3rem 0; }
+  .limit-label { color: var(--gray); }
+  .limit-val { font-weight: 500; color: var(--white); }
+
+  .feature-list { list-style: none; }
+  .feature-list li {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    font-size: 0.82rem; color: var(--gray); padding: 0.3rem 0; line-height: 1.4;
+  }
+  .feature-list li.included { color: var(--white); }
+  .feature-list li::before {
+    content: '—'; color: rgba(107,130,153,0.4); flex-shrink: 0; margin-top: 0.05rem;
+  }
+  .feature-list li.included::before { content: '✓'; color: var(--green); font-weight: 700; }
+
+  /* ── PERPETUAL ── */
+  .section-wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+  .perpetual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media(max-width: 700px) { .perpetual-grid { grid-template-columns: 1fr; } }
+
+  .lic-card {
+    border-radius: 18px; padding: 2rem; border: 1px solid rgba(255,255,255,0.08);
+    background: var(--card-bg); position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .lic-card:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+  .lic-card.agency {
+    border-color: var(--gold); background: linear-gradient(135deg, #1a2e44 0%, #2a3f5a 100%);
+    box-shadow: 0 0 0 1px rgba(245,166,35,0.3);
+  }
+
+  .lic-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+  .lic-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.35rem; }
+  .lic-badge {
+    font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.7rem;
+    border-radius: 100px; letter-spacing: 0.05em;
+  }
+  .badge-blue { background: rgba(52,152,219,0.15); border: 1px solid rgba(52,152,219,0.3); color: var(--blue); }
+  .badge-gold { background: rgba(245,166,35,0.15); border: 1px solid rgba(245,166,35,0.3); color: var(--gold); }
+
+  .lic-price {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 2.8rem; letter-spacing: -0.03em; line-height: 1; margin: 0.5rem 0 0.2rem;
+  }
+  .lic-price-note { color: var(--gray); font-size: 0.82rem; margin-bottom: 1.5rem; }
+
+  .lic-cta {
+    width: 100%; padding: 0.8rem; border-radius: 10px; border: none;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem;
+    cursor: pointer; letter-spacing: 0.03em; margin-bottom: 1.5rem;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .lic-cta:hover { transform: translateY(-1px); }
+  .lic-cta.solo { background: rgba(52,152,219,0.15); color: var(--blue); border: 1.5px solid var(--blue); }
+  .lic-cta.solo:hover { background: rgba(52,152,219,0.25); }
+  .lic-cta.agency-btn { background: var(--gold); color: var(--navy); }
+  .lic-cta.agency-btn:hover { box-shadow: 0 6px 22px rgba(245,166,35,0.35); }
+
+  .lic-features { list-style: none; }
+  .lic-features li {
+    display: flex; align-items: flex-start; gap: 0.65rem;
+    font-size: 0.85rem; padding: 0.35rem 0; color: var(--white); line-height: 1.4;
+  }
+  .lic-features li span.check { color: var(--green); font-weight: 700; flex-shrink: 0; }
+  .lic-features li.gold-item span.check { color: var(--gold); }
+
+  .roi-box {
+    margin-top: 1.5rem; padding: 1rem 1.2rem;
+    background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.2);
+    border-radius: 10px;
+  }
+  .roi-box p { font-size: 0.82rem; color: var(--gold); line-height: 1.5; }
+  .roi-box strong { font-weight: 700; }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-table {
+    width: 100%; border-collapse: collapse; margin-top: 1.5rem;
+    font-size: 0.85rem;
+  }
+  .compare-table th {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem;
+    color: var(--gray); text-align: center; padding: 0.6rem 1rem;
+    letter-spacing: 0.04em; border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .compare-table th:first-child { text-align: left; }
+  .compare-table th.highlight { color: var(--green); }
+  .compare-table td {
+    padding: 0.65rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);
+    text-align: center; color: var(--gray);
+  }
+  .compare-table td:first-child { text-align: left; color: var(--white); font-weight: 400; }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .compare-table .yes { color: var(--green); font-weight: 600; }
+  .compare-table .no { color: rgba(107,130,153,0.5); }
+  .compare-table .highlight-col { background: rgba(37,211,102,0.04); }
+
+  /* ── FAQ ── */
+  .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width: 650px) { .faq-grid { grid-template-columns: 1fr; } }
+
+  .faq-item {
+    background: var(--card-bg); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 1.4rem;
+  }
+  .faq-q { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.92rem; margin-bottom: 0.5rem; }
+  .faq-a { color: var(--gray); font-size: 0.83rem; line-height: 1.6; }
+
+  /* ── BOTTOM CTA ── */
+  .bottom-cta {
+    text-align: center; padding: 5rem 2rem;
+    background: radial-gradient(ellipse 70% 50% at 50% 100%, rgba(37,211,102,0.1) 0%, transparent 70%);
+  }
+  .bottom-cta h2 { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; }
+  .bottom-cta p { color: var(--gray); font-size: 1rem; margin-bottom: 2rem; }
+  .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .cta-btn-primary {
+    background: var(--green); color: var(--navy); font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.92rem; padding: 0.85rem 2rem;
+    border-radius: 100px; border: none; cursor: pointer; letter-spacing: 0.03em;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .cta-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,211,102,0.3); }
+  .cta-btn-secondary {
+    background: transparent; color: var(--white); font-family: 'Syne', sans-serif;
+    font-weight: 600; font-size: 0.92rem; padding: 0.85rem 2rem;
+    border-radius: 100px; border: 1.5px solid rgba(255,255,255,0.2); cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .cta-btn-secondary:hover { border-color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.04); }
+
+  /* ── UTILITY ── */
+  section { padding: 5rem 0; }
+  section + section { padding-top: 0; }
+  h2.sec-title {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.9rem;
+    text-align: center; margin-bottom: 0.5rem; letter-spacing: -0.01em;
+  }
+  .sec-sub { text-align: center; color: var(--gray); font-size: 0.92rem; margin-bottom: 3rem; }
+
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center;
+    color: var(--gray); font-size: 0.82rem;
+  }
+  footer a { color: var(--green); text-decoration: none; }
+
+  .wa-icon { display: inline-block; vertical-align: middle; margin-right: 0.35rem; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <span style="font-size:1.4rem">💬</span>
+    SocietyBot
+    <span class="logo-dot"></span>
+  </div>
+  <a href="https://wa.me/919724080157?text=Book%20a%20Demo" target="_blank">
+    <button class="nav-pill">Book a Demo →</button>
+  </a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <span>🟢</span>
+    WhatsApp-Native Society Automation
+  </div>
+  <h1>Simple Pricing.<br><span>No Surprises.</span></h1>
+  <p>Choose between a flexible monthly subscription or own the code forever with a Perpetual License.</p>
+
+  <div class="toggle-wrap">
+    <span class="toggle-label active" id="monthly-label">Monthly</span>
+    <button class="toggle" id="billing-toggle" onclick="toggleBilling()"></button>
+    <span class="toggle-label" id="annual-label">Annual</span>
+    <span class="save-badge" id="save-badge" style="opacity:0.4">Save 2 months</span>
+  </div>
+</div>
+
+<!-- SAAS SECTION -->
+<section>
+  <div class="section-label">SaaS Plans — We Host Everything</div>
+
+  <div class="saas-grid">
+
+    <!-- Trial -->
+    <div class="plan-card">
+      <div class="plan-color-bar" style="background:#3498DB"></div>
+      <div class="plan-name" style="color:#3498DB">Trial</div>
+      <div class="plan-tagline">Developer / Small Society</div>
+      <div class="plan-price monthly-price" style="color:#3498DB">₹499<span style="font-size:1rem;font-weight:400;color:var(--gray)">/mo</span></div>
+      <div class="plan-price annual-price" style="color:#3498DB;display:none">₹4,990<span style="font-size:1rem;font-weight:400;color:var(--gray)">/yr</span></div>
+      <div class="plan-period">Test before you commit</div>
+      <button class="plan-cta secondary">Start Free Trial</button>
+      <div class="plan-divider"></div>
+      <div class="plan-limits">
+        <div class="limit-row"><span class="limit-label">Flats</span><span class="limit-val">Up to 20</span></div>
+        <div class="limit-row"><span class="limit-label">Messages</span><span class="limit-val">500 / mo</span></div>
+        <div class="limit-row"><span class="limit-label">Hosting</span><span class="limit-val">Shared</span></div>
+      </div>
+      <ul class="feature-list">
+        <li class="included">Payments (Razorpay)</li>
+        <li class="included">Complaint management</li>
+        <li class="included">Auto reminders</li>
+        <li class="included">WhatsApp bot</li>
+        <li>Custom society branding</li>
+        <li>Admin dashboard</li>
+      </ul>
+    </div>
+
+    <!-- Starter -->
+    <div class="plan-card">
+      <div class="plan-color-bar" style="background:#25D366"></div>
+      <div class="plan-name" style="color:#25D366">Starter</div>
+      <div class="plan-tagline">Growing Societies</div>
+      <div class="plan-price monthly-price" style="color:#25D366">₹1,499<span style="font-size:1rem;font-weight:400;color:var(--gray)">/mo</span></div>
+      <div class="plan-price annual-price" style="color:#25D366;display:none">₹14,990<span style="font-size:1rem;font-weight:400;color:var(--gray)">/yr</span></div>
+      <div class="plan-period monthly-period">+ ₹999 setup · <span class="save-badge" style="font-size:0.68rem">Save ₹3k/yr annual</span></div>
+      <div class="plan-period annual-period" style="display:none">Setup included · Billed annually</div>
+      <button class="plan-cta primary">Get Started</button>
+      <div class="plan-divider"></div>
+      <div class="plan-limits">
+        <div class="limit-row"><span class="limit-label">Flats</span><span class="limit-val">Up to 100</span></div>
+        <div class="limit-row"><span class="limit-label">Messages</span><span class="limit-val">2,000 / mo</span></div>
+        <div class="limit-row"><span class="limit-label">Hosting</span><span class="limit-val">Shared</span></div>
+      </div>
+      <ul class="feature-list">
+        <li class="included">Payments (Razorpay)</li>
+        <li class="included">Complaint management</li>
+        <li class="included">Auto reminders</li>
+        <li class="included">WhatsApp bot</li>
+        <li class="included">Custom branding</li>
+        <li>Admin dashboard</li>
+      </ul>
+    </div>
+
+    <!-- Pro -->
+    <div class="plan-card popular">
+      <div class="popular-badge">MOST POPULAR</div>
+      <div class="plan-color-bar" style="background:#F5A623"></div>
+      <div class="plan-name" style="color:#F5A623">Pro</div>
+      <div class="plan-tagline">Large Societies</div>
+      <div class="plan-price monthly-price" style="color:#F5A623">₹3,499<span style="font-size:1rem;font-weight:400;color:var(--gray)">/mo</span></div>
+      <div class="plan-price annual-price" style="color:#F5A623;display:none">₹34,990<span style="font-size:1rem;font-weight:400;color:var(--gray)">/yr</span></div>
+      <div class="plan-period monthly-period">+ ₹1,999 setup · <span class="save-badge" style="font-size:0.68rem">Save ₹7k/yr annual</span></div>
+      <div class="plan-period annual-period" style="display:none">Setup included · Billed annually</div>
+      <button class="plan-cta primary">Get Started</button>
+      <div class="plan-divider"></div>
+      <div class="plan-limits">
+        <div class="limit-row"><span class="limit-label">Flats</span><span class="limit-val">Up to 500</span></div>
+        <div class="limit-row"><span class="limit-label">Messages</span><span class="limit-val">10,000 / mo</span></div>
+        <div class="limit-row"><span class="limit-label">Hosting</span><span class="limit-val">Dedicated</span></div>
+      </div>
+      <ul class="feature-list">
+        <li class="included">Payments (Razorpay)</li>
+        <li class="included">Complaint management</li>
+        <li class="included">Auto reminders</li>
+        <li class="included">WhatsApp bot</li>
+        <li class="included">Custom branding</li>
+        <li class="included">Admin dashboard</li>
+      </ul>
+    </div>
+
+    <!-- Enterprise -->
+    <div class="plan-card">
+      <div class="plan-color-bar" style="background:#E67E22"></div>
+      <div class="plan-name" style="color:#E67E22">Enterprise</div>
+      <div class="plan-tagline">PMCs &amp; Developers</div>
+      <div class="plan-price" style="color:#E67E22; font-size:1.9rem; margin-top:0.2rem">Custom</div>
+      <div class="plan-period">Talk to us</div>
+      <button class="plan-cta outline" style="color:#E67E22; border-color:#E67E22">Contact Sales</button>
+      <div class="plan-divider"></div>
+      <div class="plan-limits">
+        <div class="limit-row"><span class="limit-label">Flats</span><span class="limit-val">Unlimited</span></div>
+        <div class="limit-row"><span class="limit-label">Messages</span><span class="limit-val">Unlimited</span></div>
+        <div class="limit-row"><span class="limit-label">Hosting</span><span class="limit-val">Dedicated+</span></div>
+      </div>
+      <ul class="feature-list">
+        <li class="included">Payments (Razorpay/custom)</li>
+        <li class="included">Complaint management</li>
+        <li class="included">Auto reminders</li>
+        <li class="included">WhatsApp bot</li>
+        <li class="included">Custom branding</li>
+        <li class="included">Admin dashboard</li>
+        <li class="included">Multi-society support</li>
+        <li class="included">Dedicated manager</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PERPETUAL LICENSE SECTION -->
+<section style="padding-top: 0">
+  <div class="section-wrap">
+    <div class="section-label">Perpetual License — Own the Code Forever</div>
+    <h2 class="sec-title">No Monthly Fees. Ever.</h2>
+    <p class="sec-sub">Buy once, self-host on any server, keep the source code forever.</p>
+
+    <div class="perpetual-grid">
+
+      <!-- Solo -->
+      <div class="lic-card">
+        <div class="lic-header">
+          <div class="lic-name">Solo License</div>
+          <span class="lic-badge badge-blue">1 DEPLOYMENT</span>
+        </div>
+        <div class="lic-price" style="color:#3498DB">₹24,999</div>
+        <div class="lic-price-note">One-time · No recurring fees</div>
+        <button class="lic-cta solo">Buy Solo License →</button>
+        <ul class="lic-features">
+          <li><span class="check">✓</span> Full source code (GitHub access)</li>
+          <li><span class="check">✓</span> Deploy to 1 server, forever</li>
+          <li><span class="check">✓</span> Self-host on Render, Railway, VPS</li>
+          <li><span class="check">✓</span> No dependency on us post-purchase</li>
+          <li><span class="check">✓</span> 6 months of updates included</li>
+          <li><span class="check">✓</span> 1 × 2hr onboarding + setup session</li>
+          <li><span class="check">✓</span> AMC: ₹4,999/yr for continued updates</li>
+        </ul>
+      </div>
+
+      <!-- Agency -->
+      <div class="lic-card agency">
+        <div class="lic-header">
+          <div class="lic-name">Agency License</div>
+          <span class="lic-badge badge-gold">BEST ROI</span>
+        </div>
+        <div class="lic-price" style="color:#F5A623">₹74,999</div>
+        <div class="lic-price-note">One-time · White-label · Unlimited deployments</div>
+        <button class="lic-cta agency-btn">Buy Agency License →</button>
+        <ul class="lic-features">
+          <li class="gold-item"><span class="check">✓</span> Full source code (GitHub access)</li>
+          <li class="gold-item"><span class="check">✓</span> <strong>Unlimited deployments</strong></li>
+          <li class="gold-item"><span class="check">✓</span> <strong>White-label rights</strong> — your brand</li>
+          <li class="gold-item"><span class="check">✓</span> <strong>Resell to clients</strong> — keep 100% revenue</li>
+          <li class="gold-item"><span class="check">✓</span> 12 months of updates included</li>
+          <li class="gold-item"><span class="check">✓</span> 3 × setup sessions with priority support</li>
+          <li class="gold-item"><span class="check">✓</span> First ₹10,000 of customisation free</li>
+          <li class="gold-item"><span class="check">✓</span> AMC: ₹9,999/yr for continued updates</li>
+        </ul>
+        <div class="roi-box">
+          <p>💡 <strong>ROI Calculator:</strong> Deploy to 10 societies @ ₹1,000/mo each → ₹10,000/mo revenue → Recoup investment in <strong>8 months</strong>. Pure profit after.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section>
+  <div class="section-wrap">
+    <div class="section-label">Full Feature Comparison</div>
+    <h2 class="sec-title">Everything at a Glance</h2>
+    <p class="sec-sub">All SaaS plans and Perpetual Licenses compared</p>
+    <div style="overflow-x:auto">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Trial</th>
+          <th>Starter</th>
+          <th class="highlight">Pro ★</th>
+          <th>Enterprise</th>
+          <th>Perpetual</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Maintenance Payments</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes highlight-col">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Complaint Management</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes highlight-col">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Auto Reminders</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes highlight-col">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Custom Society Branding</td><td class="no">—</td><td class="yes">✓</td><td class="yes highlight-col">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Admin Dashboard</td><td class="no">—</td><td class="no">—</td><td class="yes highlight-col">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>Multi-Society Support</td><td class="no">—</td><td class="no">—</td><td class="no highlight-col">—</td><td class="yes">✓</td><td class="yes">✓ Agency</td></tr>
+        <tr><td>Dedicated Hosting</td><td class="no">Shared</td><td class="no">Shared</td><td class="yes highlight-col">✓</td><td class="yes">✓</td><td>Self-host</td></tr>
+        <tr><td>Source Code Access</td><td class="no">—</td><td class="no">—</td><td class="no highlight-col">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>White-label Rights</td><td class="no">—</td><td class="no">—</td><td class="no highlight-col">—</td><td class="no">—</td><td class="yes">Agency only</td></tr>
+        <tr><td>Uptime SLA</td><td class="no">None</td><td>99%</td><td class="highlight-col">99.5%</td><td>99.9%</td><td>Self-managed</td></tr>
+        <tr><td>Support</td><td>Community</td><td>Email</td><td class="highlight-col">Email + Chat</td><td>Dedicated</td><td>Setup sessions</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section>
+  <div class="section-wrap">
+    <div class="section-label">Common Questions</div>
+    <h2 class="sec-title">Got Questions?</h2>
+    <p class="sec-sub" style="margin-bottom:2rem">Everything you need to know about SocietyBot pricing</p>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">Can I switch from SaaS to Perpetual License later?</div>
+        <div class="faq-a">Yes. If you're on a SaaS plan and decide to purchase a Perpetual License, we'll credit up to 3 months of paid SaaS fees toward the license price.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What payment gateway do residents use?</div>
+        <div class="faq-a">Razorpay — supporting UPI, Cards, Net Banking, and Wallets. For SaaS plans, we use a shared Razorpay account. On Starter+, you connect your own Razorpay account so payments go directly to your society.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Do residents need to download any app?</div>
+        <div class="faq-a">No. Everything runs on WhatsApp — which residents already have. No new apps, no logins, no confusion. Adoption is instant.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What happens after the 6/12-month update period on Perpetual?</div>
+        <div class="faq-a">Your bot keeps working — you just won't receive new features or patches. You can subscribe to our Annual Maintenance Contract (AMC) for ₹4,999–9,999/yr to stay updated, or self-maintain the code.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can the Agency License be used for our own internal societies?</div>
+        <div class="faq-a">Absolutely. The Agency License covers unlimited deployments — whether for your own projects, client deployments, or both. White-label and resell rights are included.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How long does setup take?</div>
+        <div class="faq-a">Approximately 30 minutes from signing up to a live WhatsApp bot. We provide a guided onboarding call for all paid plans and handle the technical setup end-to-end.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<div class="bottom-cta">
+  <h2>Start Automating Today</h2>
+  <p>Join societies across India that have stopped chasing maintenance dues.</p>
+  <div class="cta-buttons">
+    <button class="cta-btn-primary">🟢 Start Trial — ₹499/mo</button>
+    <button class="cta-btn-secondary">Book a Free Demo Call</button>
+  </div>
+</div>
+
+<footer>
+  <div>© 2025 SocietyBot. Made with 💚 for Indian housing societies.</div>
+  <div><a href="mailto:hello@societybot.in">hello@societybot.in</a> · +91 98765 43210</div>
+</footer>
+
+<script>
+  let isAnnual = false;
+
+  function toggleBilling() {
+    isAnnual = !isAnnual;
+    const toggle = document.getElementById('billing-toggle');
+    const monthlyLabel = document.getElementById('monthly-label');
+    const annualLabel = document.getElementById('annual-label');
+    const saveBadge = document.getElementById('save-badge');
+
+    toggle.classList.toggle('annual', isAnnual);
+    monthlyLabel.classList.toggle('active', !isAnnual);
+    annualLabel.classList.toggle('active', isAnnual);
+    saveBadge.style.opacity = isAnnual ? '1' : '0.4';
+
+    document.querySelectorAll('.monthly-price').forEach(el => el.style.display = isAnnual ? 'none' : '');
+    document.querySelectorAll('.annual-price').forEach(el => el.style.display = isAnnual ? '' : 'none');
+    document.querySelectorAll('.monthly-period').forEach(el => el.style.display = isAnnual ? 'none' : '');
+    document.querySelectorAll('.annual-period').forEach(el => el.style.display = isAnnual ? '' : 'none');
+  }
+</script>
+</body>
+</html>
