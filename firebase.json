@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "societybot",
     "public": "public",
     "ignore": [
       "firebase.json",
