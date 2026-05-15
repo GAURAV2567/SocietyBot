@@ -3,1197 +3,700 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SocietyBot — WhatsApp Automation for Housing Societies</title>
+<title>SocietyBot — Society Management on WhatsApp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F5F0E8;
+  --cream-dk:#EDE7D9;
+  --cream-dkr:#E0D8C8;
+  --ink:#1A1208;
+  --ink-lt:#3D3220;
+  --ink-muted:#6B5E48;
+  --ink-faint:#A89880;
+  --green:#1A6B3C;
+  --green-lt:#2D9A57;
+  --green-pale:#D4EDDE;
+  --green-bg:#E8F5EE;
+  --ochre:#C17F24;
+  --ochre-pale:#FDF3E0;
+  --ochre-lt:#E8A93C;
+  --red:#B53A2F;
+  --red-pale:#FDECEA;
+  --wa:#25D366;
+  --border:rgba(26,18,8,0.1);
+  --border-md:rgba(26,18,8,0.15);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;line-height:1.6;cursor:none}
+.cursor{position:fixed;width:12px;height:12px;border-radius:50%;background:var(--green);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:multiply}
+.cursor-ring{position:fixed;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--green);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s;opacity:.5}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--cream-dk)}::-webkit-scrollbar-thumb{background:var(--green);border-radius:2px}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");opacity:.5}
+*{position:relative;z-index:1}
 
-:root {
-  --navy:     #08111C;
-  --navy-2:   #0E1E30;
-  --navy-3:   #162840;
-  --green:    #25D366;
-  --green-dk: #128C7E;
-  --green-lt: #d4f7e3;
-  --gold:     #F5A623;
-  --white:    #FFFFFF;
-  --gray:     #7A95AE;
-  --gray-lt:  #C2D3E0;
-  --card:     #0F1E2E;
-  --card-2:   #142030;
-  --red:      #E74C3C;
-  --border:   rgba(255,255,255,0.07);
-  --radius:   18px;
-}
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 3.5rem;position:sticky;top:0;z-index:200;background:rgba(245,240,232,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:.55rem;font-family:'Fraunces',serif;font-weight:700;font-size:1.4rem;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+.logo-mark{width:34px;height:34px;border-radius:10px;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;font-family:'Fraunces',serif;font-weight:900;font-style:italic}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--ink-muted);text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-right{display:flex;gap:.75rem;align-items:center}
+.nav-ghost{padding:.5rem 1.2rem;border-radius:100px;border:1.5px solid var(--border-md);background:transparent;font-size:.82rem;font-weight:600;cursor:pointer;color:var(--ink);font-family:inherit;transition:all .2s;text-decoration:none;display:inline-block}
+.nav-ghost:hover{border-color:var(--green);color:var(--green)}
+.nav-solid{padding:.55rem 1.4rem;border-radius:100px;background:var(--ink);color:var(--cream);border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .2s;text-decoration:none;display:inline-block}
+.nav-solid:hover{background:var(--green);transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,107,60,.25)}
 
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--navy);
-  color: var(--white);
-  overflow-x: hidden;
-  line-height: 1.6;
-}
+/* HERO */
+.hero{min-height:95vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0 3.5rem;overflow:hidden;border-bottom:2px solid var(--ink)}
+.hero-left{padding:5rem 2rem 5rem 0}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:2rem}
+.hero-eyebrow::before{content:'';width:24px;height:2px;background:var(--green)}
+.hero h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(3rem,5.5vw,5.8rem);line-height:1.0;letter-spacing:-.04em;margin-bottom:1.75rem;color:var(--ink)}
+.hero h1 em{font-style:italic;color:var(--green)}
+.hero h1 .stroke{-webkit-text-stroke:2px var(--ink);color:transparent}
+.hero-desc{font-size:1.1rem;color:var(--ink-muted);max-width:480px;line-height:1.75;margin-bottom:2.5rem}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem}
+.btn-grn{padding:1rem 2rem;border-radius:100px;background:var(--green);color:#fff;border:none;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
+.btn-grn:hover{background:var(--green-lt);transform:translateY(-2px);box-shadow:0 10px 32px rgba(26,107,60,.3)}
+.btn-out{padding:1rem 2rem;border-radius:100px;background:transparent;color:var(--ink);border:2px solid var(--ink);font-size:1rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
+.btn-out:hover{background:var(--ink);color:var(--cream)}
+.hero-ticker{display:flex;gap:2rem;flex-wrap:wrap}
+.tk-num{font-family:'Fraunces',serif;font-weight:900;font-size:2.2rem;letter-spacing:-.04em;color:var(--ink);line-height:1}
+.tk-num span{color:var(--green)}
+.tk-lbl{font-size:.75rem;color:var(--ink-faint);letter-spacing:.05em;text-transform:uppercase}
 
-/* ─── SCROLLBAR ─── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--navy); }
-::-webkit-scrollbar-thumb { background: var(--green-dk); border-radius: 3px; }
+/* HERO RIGHT */
+.hero-right{height:100%;display:flex;align-items:center;justify-content:center;position:relative;border-left:2px solid var(--ink);background:var(--green);overflow:hidden;padding:3rem}
+.hero-right::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 20px,rgba(255,255,255,.04) 20px,rgba(255,255,255,.04) 21px)}
+.phone{width:255px;position:relative;z-index:2;transform:rotate(-3deg);filter:drop-shadow(0 32px 48px rgba(0,0,0,.4))}
+.ph-frame{background:#111;border-radius:40px;padding:10px;border:3px solid rgba(255,255,255,.15)}
+.ph-screen{background:var(--cream-dk);border-radius:32px;overflow:hidden;font-size:10px;font-family:'Instrument Sans',sans-serif}
+.ph-bar{background:#1A6B3C;padding:8px 14px 5px;display:flex;justify-content:space-between;font-size:8px;color:#fff}
+.ph-head{background:#1A6B3C;padding:8px 12px;display:flex;align-items:center;gap:8px;color:#fff;border-bottom:1px solid rgba(255,255,255,.15)}
+.ph-av{width:28px;height:28px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.ph-msgs{padding:10px;background:#ECE5DD;display:flex;flex-direction:column;gap:6px;min-height:360px}
+.m{padding:6px 9px;border-radius:10px;max-width:82%;line-height:1.4;font-size:9.5px}
+.mi{background:#fff;border-bottom-left-radius:2px;color:#111;align-self:flex-start}
+.mo{background:#DCF8C6;border-bottom-right-radius:2px;color:#111;align-self:flex-end}
+.m strong{display:block;font-weight:700;margin-bottom:1px}
+.mt{font-size:7px;color:#999;text-align:right;margin-top:2px}
+.mbadge{display:inline-block;padding:2px 6px;border-radius:100px;background:rgba(26,107,60,.12);color:#1A6B3C;font-size:8px;font-weight:700}
+.fl{position:absolute;z-index:3;background:var(--cream);border:2px solid var(--ink);border-radius:12px;padding:.6rem .9rem;font-size:.78rem;font-weight:700;color:var(--ink);white-space:nowrap}
+.fl1{top:14%;left:4%;transform:rotate(-2deg)}
+.fl2{bottom:18%;right:3%;transform:rotate(3deg)}
+.fl3{bottom:36%;left:3%;transform:rotate(-1deg)}
+.fldot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
 
-/* ─── NAV ─── */
-nav {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1.1rem 4rem;
-  position: sticky; top: 0; z-index: 200;
-  backdrop-filter: blur(20px);
-  background: rgba(8,17,28,0.88);
-  border-bottom: 1px solid var(--border);
-}
-.logo {
-  display: flex; align-items: center; gap: 0.6rem;
-  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.35rem;
-  text-decoration: none; color: var(--white);
-}
-.logo-icon {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: var(--green); display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-}
-.nav-links {
-  display: flex; align-items: center; gap: 2rem; list-style: none;
-}
-.nav-links a {
-  color: var(--gray); text-decoration: none; font-size: 0.875rem;
-  font-weight: 500; transition: color 0.2s;
-}
-.nav-links a:hover { color: var(--white); }
-.nav-cta {
-  display: flex; align-items: center; gap: 0.75rem;
-}
-.btn-demo {
-  background: transparent; color: var(--white);
-  border: 1px solid rgba(255,255,255,0.2); border-radius: 100px;
-  padding: 0.55rem 1.25rem; font-size: 0.82rem; font-weight: 600;
-  cursor: pointer; transition: all 0.2s; font-family: inherit;
-  text-decoration: none; display: inline-block;
-}
-.btn-demo:hover { border-color: var(--green); color: var(--green); }
-.btn-start {
-  background: var(--green); color: var(--navy);
-  border: none; border-radius: 100px;
-  padding: 0.6rem 1.5rem; font-size: 0.82rem; font-weight: 700;
-  cursor: pointer; transition: all 0.2s; font-family: 'Syne', sans-serif;
-  text-decoration: none; display: inline-block; letter-spacing: 0.02em;
-}
-.btn-start:hover { box-shadow: 0 6px 24px rgba(37,211,102,0.4); transform: translateY(-1px); }
+/* MARQUEE */
+.mqb{background:var(--ink);color:var(--cream);padding:.85rem 0;overflow:hidden;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.mqt{display:flex;gap:0;white-space:nowrap;animation:mq 22s linear infinite}
+.mqt span{font-family:'Fraunces',serif;font-style:italic;font-size:1rem;padding:0 2rem;opacity:.9;border-right:1px solid rgba(255,255,255,.15)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* ─── HERO ─── */
-.hero {
-  position: relative; overflow: hidden;
-  padding: 7rem 4rem 5rem; min-height: 92vh;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center;
-}
-.hero-bg {
-  position: absolute; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 90% 60% at 50% -5%, rgba(37,211,102,0.14) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(18,140,126,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 30% at 15% 60%, rgba(37,211,102,0.04) 0%, transparent 50%);
-}
-/* floating orbs */
-.orb {
-  position: absolute; border-radius: 50%;
-  filter: blur(80px); opacity: 0.3; pointer-events: none;
-  animation: float 8s ease-in-out infinite;
-}
-.orb-1 { width: 400px; height: 400px; background: rgba(37,211,102,0.2); top: -100px; left: -100px; animation-delay: 0s; }
-.orb-2 { width: 300px; height: 300px; background: rgba(18,140,126,0.15); bottom: -50px; right: -50px; animation-delay: -3s; }
-@keyframes float {
-  0%,100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-20px) scale(1.05); }
-}
+/* SECTIONS */
+.sec{padding:6rem 3.5rem}
+.sec-inner{max-width:1160px;margin:0 auto}
+.stag{font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.stag::after{content:'';flex:1;max-width:40px;height:1.5px;background:var(--green)}
+.sh{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(2rem,4vw,3.2rem);letter-spacing:-.03em;line-height:1.1;color:var(--ink)}
+.sh em{font-style:italic;color:var(--green)}
+.ssub{font-size:1rem;color:var(--ink-muted);line-height:1.75;max-width:540px}
 
-.hero-inner { position: relative; z-index: 1; max-width: 820px; }
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  background: rgba(37,211,102,0.08); border: 1px solid rgba(37,211,102,0.3);
-  color: var(--green); font-size: 0.78rem; font-weight: 600;
-  padding: 0.4rem 1rem; border-radius: 100px; margin-bottom: 2rem;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  animation: fadeUp 0.6s ease both;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.hero h1 {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: clamp(2.8rem, 6vw, 4.8rem); line-height: 1.08;
-  letter-spacing: -0.03em; margin-bottom: 1.5rem;
-  animation: fadeUp 0.6s 0.1s ease both;
-}
-.hero h1 .accent { color: var(--green); }
-.hero h1 .dim { color: var(--gray); }
-.hero-sub {
-  font-size: 1.15rem; color: var(--gray-lt); max-width: 600px;
-  margin: 0 auto 2.5rem; line-height: 1.7; font-weight: 400;
-  animation: fadeUp 0.6s 0.2s ease both;
-}
-.hero-actions {
-  display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
-  animation: fadeUp 0.6s 0.3s ease both;
-  margin-bottom: 4rem;
-}
-.hero-btn-primary {
-  background: var(--green); color: var(--navy);
-  border: none; border-radius: 100px;
-  padding: 0.9rem 2.2rem; font-size: 1rem; font-weight: 700;
-  cursor: pointer; transition: all 0.2s; font-family: 'Syne', sans-serif;
-  display: flex; align-items: center; gap: 0.5rem;
-  text-decoration: none;
-}
-.hero-btn-primary:hover { box-shadow: 0 8px 32px rgba(37,211,102,0.4); transform: translateY(-2px); }
-.hero-btn-ghost {
-  background: rgba(255,255,255,0.05); color: var(--white);
-  border: 1px solid var(--border); border-radius: 100px;
-  padding: 0.9rem 2.2rem; font-size: 1rem; font-weight: 500;
-  cursor: pointer; transition: all 0.2s; font-family: inherit;
-  display: flex; align-items: center; gap: 0.5rem;
-  text-decoration: none;
-}
-.hero-btn-ghost:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); }
+/* PROBLEM */
+.prob-sec{background:var(--ink);color:var(--cream);border-top:2px solid var(--ink)}
+.prob-sec .stag{color:var(--ochre-lt)}.prob-sec .stag::after{background:var(--ochre-lt)}
+.prob-sec .sh{color:var(--cream)}.prob-sec .sh em{color:var(--ochre-lt)}
+.prob-sec .ssub{color:rgba(245,240,232,.65)}
+.prob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:3.5rem;border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden}
+.pc{padding:2.5rem 2rem;border-right:1px solid rgba(255,255,255,.12);transition:background .2s}
+.pc:hover{background:rgba(255,255,255,.04)}.pc:last-child{border-right:none}
+.pc-ico{font-size:2.5rem;margin-bottom:1.25rem;display:block}
+.pc h3{font-family:'Fraunces',serif;font-weight:700;font-size:1.1rem;color:var(--ochre-lt);margin-bottom:.5rem}
+.pc p{font-size:.875rem;color:rgba(245,240,232,.6);line-height:1.7}
 
-/* ─── STATS BAR ─── */
-.stats-bar {
-  display: flex; justify-content: center; gap: 0;
-  border: 1px solid var(--border); border-radius: var(--radius);
-  background: var(--card); max-width: 720px; margin: 0 auto;
-  animation: fadeUp 0.6s 0.4s ease both;
-  overflow: hidden;
-}
-.stat-item {
-  flex: 1; text-align: center; padding: 1.4rem 1rem;
-  border-right: 1px solid var(--border);
-}
-.stat-item:last-child { border-right: none; }
-.stat-num {
-  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem;
-  color: var(--green); line-height: 1;
-}
-.stat-label { font-size: 0.78rem; color: var(--gray); margin-top: 0.25rem; }
+/* HOW IT WORKS */
+.how-sec{background:var(--cream)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:3.5rem;border:2px solid var(--ink);border-radius:16px;overflow:hidden}
+.step{padding:2.5rem 1.75rem;border-right:2px solid var(--ink);transition:background .25s;background:var(--cream)}
+.step:last-child{border-right:none}.step:hover{background:var(--green-bg)}
+.sn{font-family:'Fraunces',serif;font-weight:900;font-style:italic;font-size:3.5rem;color:var(--cream-dkr);line-height:1;margin-bottom:.5rem;letter-spacing:-.05em}
+.step:hover .sn{color:var(--green-pale)}
+.sico{font-size:1.8rem;margin-bottom:1rem;display:block}
+.step h3{font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem;margin-bottom:.5rem;letter-spacing:-.01em}
+.step p{font-size:.83rem;color:var(--ink-muted);line-height:1.65}
+.schip{display:inline-block;margin-top:1rem;padding:.3rem .75rem;border-radius:100px;background:var(--green-bg);color:var(--green);font-size:.72rem;font-weight:700;border:1px solid var(--green-pale)}
+.step:hover .schip{background:var(--green);color:#fff}
 
-/* ─── SECTION COMMONS ─── */
-section { padding: 6rem 4rem; }
-.section-tag {
-  display: inline-block; font-size: 0.7rem; font-weight: 700;
-  letter-spacing: 0.14em; text-transform: uppercase; color: var(--green);
-  margin-bottom: 0.75rem;
-}
-.section-title {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.02em;
-  line-height: 1.15; margin-bottom: 0.75rem;
-}
-.section-sub {
-  color: var(--gray); font-size: 1rem; max-width: 560px; line-height: 1.7;
-}
-.center { text-align: center; }
-.center .section-sub { margin: 0 auto; }
+/* FEATURES BENTO */
+.feat-sec{background:var(--cream-dkr);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.bento{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:auto auto;gap:2px;margin-top:3rem;border:2px solid var(--ink);border-radius:16px;overflow:hidden;background:var(--ink)}
+.bc{background:var(--cream);padding:2.5rem;transition:background .2s}
+.bc:hover{background:var(--green-bg)}
+.bc.tall{grid-row:span 2}.bc.wide{grid-column:span 2}
+.bc.gc{background:var(--green);color:#fff}.bc.gc:hover{background:var(--green-lt)}
+.bc.oc{background:var(--ochre);color:#fff}.bc.oc:hover{background:var(--ochre-lt)}
+.bc.ic{background:var(--ink);color:var(--cream)}.bc.ic:hover{background:var(--ink-lt)}
+.bi{font-size:2.2rem;margin-bottom:1.25rem;display:block}
+.bt{font-family:'Fraunces',serif;font-weight:700;font-size:1.2rem;letter-spacing:-.02em;margin-bottom:.6rem}
+.bd{font-size:.85rem;color:var(--ink-muted);line-height:1.7}
+.bc.gc .bd,.bc.oc .bd,.bc.ic .bd{color:rgba(255,255,255,.75)}
+.bc.gc .bt,.bc.oc .bt,.bc.ic .bt{color:#fff}
+.btags{margin-top:1.25rem;display:flex;flex-direction:column;gap:.4rem}
+.btag{font-size:.78rem;font-weight:600;color:var(--green);display:flex;align-items:center;gap:.4rem}
+.btag::before{content:'↳';font-size:.7rem;opacity:.6}
+.bc.gc .btag,.bc.ic .btag{color:rgba(255,255,255,.85)}
+.mchat{margin-top:1.5rem;display:flex;flex-direction:column;gap:5px}
+.mc{padding:7px 10px;border-radius:10px;font-size:10px;line-height:1.45;max-width:80%}
+.mci{background:var(--cream-dk);align-self:flex-start;color:var(--ink)}
+.mco{background:var(--green);color:#fff;align-self:flex-end}
+.mcs{align-self:center;background:rgba(26,107,60,.08);border:1px solid var(--green-pale);color:var(--green);border-radius:100px;font-size:9px;font-weight:700;padding:3px 10px}
 
-/* ─── PROBLEM SECTION ─── */
-.problem-section {
-  background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-}
-.problem-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  gap: 0; max-width: 1080px; margin: 3rem auto 0;
-  border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
-}
-.problem-card {
-  padding: 2rem; border-right: 1px solid var(--border);
-  position: relative;
-}
-.problem-card:last-child { border-right: none; }
-.problem-icon { font-size: 2rem; margin-bottom: 1rem; }
-.problem-card h3 {
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
-  color: var(--red); margin-bottom: 0.5rem;
-}
-.problem-card p { font-size: 0.85rem; color: var(--gray); line-height: 1.6; }
+/* VISITOR MANAGEMENT */
+.vis-sec{background:var(--ink);color:var(--cream);border-top:2px solid var(--ink)}
+.vis-sec .stag{color:var(--ochre-lt)}.vis-sec .stag::after{background:var(--ochre-lt)}
+.vis-sec .sh{color:var(--cream)}.vis-sec .sh em{color:var(--ochre-lt)}
+.vis-sec .ssub{color:rgba(245,240,232,.65)}
+.vlay{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;margin-top:3.5rem;align-items:start}
+.vfeats{display:flex;flex-direction:column;gap:1.5rem}
+.vf{display:flex;gap:1.25rem;align-items:flex-start;padding:1.5rem;border:1px solid rgba(255,255,255,.1);border-radius:14px;transition:border-color .2s,background .2s}
+.vf:hover{border-color:rgba(193,127,36,.4);background:rgba(193,127,36,.05)}
+.vico{width:46px;height:46px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:1px solid rgba(255,255,255,.12)}
+.vf h3{font-family:'Fraunces',serif;font-weight:700;font-size:.98rem;color:var(--cream);margin-bottom:.35rem}
+.vf p{font-size:.82rem;color:rgba(245,240,232,.6);line-height:1.65}
+.vdet{margin-top:.5rem;font-size:.75rem;font-weight:700;color:var(--ochre-lt);display:flex;align-items:center;gap:.35rem}
 
-/* ─── HOW IT WORKS ─── */
-.how-section { max-width: 1100px; margin: 0 auto; }
-.how-steps {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem; margin-top: 3.5rem;
-  position: relative;
-}
-.how-steps::before {
-  content: '';
-  position: absolute; top: 3.5rem; left: 12.5%; right: 12.5%;
-  height: 1px; background: linear-gradient(90deg, transparent, var(--green), transparent);
-  z-index: 0;
-}
-.step-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 2rem 1.5rem;
-  position: relative; z-index: 1; text-align: center;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-}
-.step-card:hover {
-  transform: translateY(-4px); border-color: rgba(37,211,102,0.3);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.3);
-}
-.step-num {
-  width: 52px; height: 52px; border-radius: 50%;
-  background: var(--navy); border: 2px solid var(--green);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
-  color: var(--green); margin: 0 auto 1.25rem;
-}
-.step-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
-.step-card h3 {
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
-  margin-bottom: 0.6rem;
-}
-.step-card p { font-size: 0.83rem; color: var(--gray); line-height: 1.6; }
-.step-card .step-detail {
-  margin-top: 1rem; padding: 0.6rem 0.8rem;
-  background: rgba(37,211,102,0.06); border-radius: 8px;
-  font-size: 0.75rem; color: var(--green); font-weight: 600;
-}
+/* VISITOR FLOW CARD */
+.vflow{background:var(--cream);border-radius:16px;border:2px solid rgba(255,255,255,.12);overflow:hidden;color:var(--ink)}
+.vfh{background:var(--ochre);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:.75rem}
+.vfh h3{font-family:'Fraunces',serif;font-weight:700;color:#fff;font-size:1rem}
+.vfh span{font-size:.78rem;color:rgba(255,255,255,.8)}
+.vfb{padding:1.5rem}
+.vfs{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)}
+.vfs:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.vfn{width:28px;height:28px;border-radius:50%;background:var(--ochre);color:#fff;font-family:'Fraunces',serif;font-weight:900;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vfc h4{font-weight:700;font-size:.87rem;margin-bottom:.2rem;color:var(--ink)}
+.vfc p{font-size:.78rem;color:var(--ink-muted);line-height:1.55}
+.vtag{display:inline-block;margin-top:.35rem;padding:.2rem .6rem;border-radius:100px;font-size:.7rem;font-weight:700}
+.vtg{background:var(--green-bg);color:var(--green);border:1px solid var(--green-pale)}
+.vto{background:var(--ochre-pale);color:var(--ochre);border:1px solid rgba(193,127,36,.25)}
+.vtr{background:var(--red-pale);color:var(--red);border:1px solid rgba(181,58,47,.2)}
 
-/* ─── FEATURES ─── */
-.features-section { background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.features-inner { max-width: 1100px; margin: 0 auto; }
-.features-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  gap: 1.25rem; margin-top: 3.5rem;
-}
-.feat-card {
-  background: var(--navy); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 2rem;
-  transition: border-color 0.2s, transform 0.2s;
-  position: relative; overflow: hidden;
-}
-.feat-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: transparent; transition: background 0.3s;
-}
-.feat-card:hover { border-color: rgba(37,211,102,0.25); transform: translateY(-3px); }
-.feat-card:hover::before { background: var(--green); }
-.feat-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  background: rgba(37,211,102,0.1); display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem; margin-bottom: 1.25rem;
-}
-.feat-card h3 {
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem;
-  margin-bottom: 0.6rem;
-}
-.feat-card p { font-size: 0.85rem; color: var(--gray); line-height: 1.65; }
-.feat-card .feat-detail {
-  margin-top: 1rem; font-size: 0.8rem; color: var(--green-dk);
-  font-weight: 600; display: flex; align-items: center; gap: 0.3rem;
-}
+/* VMS NOTIFICATION */
+.vmn{margin-top:1.5rem;background:var(--green-bg);border-radius:12px;border:1px solid var(--green-pale);padding:1.25rem}
+.vmnh{display:flex;align-items:center;gap:.65rem;margin-bottom:.75rem}
+.vmnav{width:32px;height:32px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center;font-size:.9rem}
+.vmn-nm{font-weight:700;font-size:.83rem;color:var(--ink)}
+.vmn-sb{font-size:.72rem;color:var(--ink-muted)}
+.vmn-body{font-size:.83rem;color:var(--ink-lt);line-height:1.65}
+.vmn-body strong{color:var(--ink)}
+.vmn-btns{display:flex;gap:.5rem;margin-top:.75rem}
+.vmn-btn{flex:1;padding:.5rem;border-radius:8px;border:none;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit}
+.vba{background:var(--green);color:#fff}
+.vbd{background:var(--red-pale);color:var(--red);border:1px solid rgba(181,58,47,.2)}
 
-/* Large feature card */
-.feat-card.large {
-  grid-column: span 2;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
-  align-items: center;
-}
-.feat-card.large .feat-content {}
-.feat-card.large .feat-visual {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 14px; padding: 1.25rem; font-size: 0.78rem;
-  font-family: 'Courier New', monospace;
-}
-.msg-bubble {
-  padding: 0.6rem 0.9rem; border-radius: 12px;
-  margin-bottom: 0.5rem; max-width: 85%; line-height: 1.5;
-}
-.msg-in  { background: rgba(255,255,255,0.06); color: var(--gray-lt); }
-.msg-out { background: var(--green); color: var(--navy); margin-left: auto; font-weight: 600; }
-.msg-time { font-size: 0.65rem; color: var(--gray); text-align: right; margin-top: 2px; }
+/* NOTIFICATIONS */
+.notif-sec{background:var(--cream);border-top:2px solid var(--ink)}
+.notif-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:3rem}
+.ncard{border:2px solid var(--ink);border-radius:16px;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.ncard:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(26,18,8,.12)}
+.nch{padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.nct{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted)}
+.ntr{font-size:.68rem;color:var(--ink-faint);font-style:italic}
+.ncb{padding:1.25rem;background:var(--cream);font-size:.85rem;line-height:1.75;color:var(--ink-lt)}
+.ncb strong{color:var(--ink);font-weight:700}
+.gnc .nch{background:var(--green);}.gnc .nct{color:rgba(255,255,255,.85)}.gnc .ntr{color:rgba(255,255,255,.65)}
+.onc .nch{background:var(--ochre)}.onc .nct{color:#fff}.onc .ntr{color:rgba(255,255,255,.65)}
+.inc .nch{background:var(--ink)}.inc .nct{color:rgba(245,240,232,.8)}.inc .ntr{color:rgba(245,240,232,.5)}
+.inc .ncb{background:var(--ink);color:rgba(245,240,232,.85)}
+.inc .ncb strong{color:#fff}
 
-/* ─── NOTIFICATION EXAMPLES ─── */
-.notif-section { max-width: 1100px; margin: 0 auto; }
-.notif-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 1.25rem; margin-top: 3.5rem;
-}
-.notif-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1.75rem;
-  transition: border-color 0.2s;
-}
-.notif-card:hover { border-color: rgba(37,211,102,0.25); }
-.notif-header {
-  display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;
-}
-.notif-avatar {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--green); display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; font-weight: 700; color: var(--navy); flex-shrink: 0;
-}
-.notif-from { font-weight: 600; font-size: 0.88rem; }
-.notif-tag { font-size: 0.7rem; color: var(--gray); }
-.notif-body {
-  background: var(--navy); border-radius: 12px; padding: 1rem 1.1rem;
-  font-size: 0.83rem; line-height: 1.7; color: var(--gray-lt);
-  border-left: 3px solid var(--green);
-}
-.notif-body strong { color: var(--white); }
-.notif-trigger {
-  margin-top: 0.75rem; font-size: 0.75rem; color: var(--gray);
-  display: flex; align-items: center; gap: 0.4rem;
-}
+/* PRICING */
+.pri-sec{background:var(--cream-dkr);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.bil-row{display:flex;align-items:center;gap:1rem;margin:2rem 0 3rem}
+.bl{font-size:.9rem;color:var(--ink-muted);cursor:pointer}
+.bl.on{color:var(--ink);font-weight:700}
+.tog{width:48px;height:26px;border-radius:100px;background:var(--ink-muted);border:none;cursor:pointer;position:relative;transition:background .2s}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+.tog.on::after{transform:translateX(22px)}.tog.on{background:var(--green)}
+.sav{font-size:.72rem;font-weight:700;padding:.22rem .65rem;border-radius:100px;background:var(--ochre-pale);border:1px solid rgba(193,127,36,.3);color:var(--ochre)}
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5px;border:2px solid var(--ink);border-radius:16px;overflow:hidden;background:var(--ink)}
+.pb{background:var(--cream);padding:2rem 1.5rem;display:flex;flex-direction:column;transition:background .2s}
+.pb:hover{background:var(--green-bg)}
+.pb.feat{background:var(--green);color:#fff}.pb.feat:hover{background:var(--green-lt)}
+.pn{font-family:'Fraunces',serif;font-weight:700;font-size:1.2rem;letter-spacing:-.02em;margin-bottom:.2rem}
+.pb.feat .pn{color:#fff}
+.pt{font-size:.78rem;color:var(--ink-muted);margin-bottom:1.25rem}
+.pb.feat .pt{color:rgba(255,255,255,.75)}
+.pp{font-family:'Fraunces',serif;font-weight:900;font-size:2.6rem;letter-spacing:-.04em;line-height:1}
+.pb.feat .pp{color:#fff}
+.pp sub{font-size:1rem;font-weight:400;font-family:'Instrument Sans',sans-serif;vertical-align:baseline;color:var(--ink-muted)}
+.pb.feat .pp sub{color:rgba(255,255,255,.7)}
+.pnote{font-size:.76rem;color:var(--ink-muted);margin-bottom:1.5rem;min-height:1.2em}
+.pb.feat .pnote{color:rgba(255,255,255,.65)}
+.pa{width:100%;padding:.75rem;border-radius:10px;font-family:'Instrument Sans',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;margin-bottom:1.5rem;transition:all .2s;border:none}
+.pa.sol{background:var(--ink);color:var(--cream)}.pa.sol:hover{background:var(--green);transform:translateY(-1px)}
+.pa.out{background:transparent;color:var(--ink);border:2px solid var(--ink)}.pa.out:hover{background:var(--ink);color:var(--cream)}
+.pa.wh{background:#fff;color:var(--green)}.pa.wh:hover{background:var(--cream)}
+.pa.go{background:transparent;color:var(--ochre);border:2px solid var(--ochre)}.pa.go:hover{background:var(--ochre);color:#fff}
+.psep{height:1px;background:var(--border);margin-bottom:1.25rem}
+.pb.feat .psep{background:rgba(255,255,255,.2)}
+.plim{margin-bottom:1.25rem}
+.plr{display:flex;justify-content:space-between;font-size:.81rem;padding:.28rem 0}
+.plk{color:var(--ink-muted)}.plv{font-weight:600;color:var(--ink)}
+.pb.feat .plk{color:rgba(255,255,255,.65)}.pb.feat .plv{color:#fff}
+.pfl{list-style:none;flex:1}
+.pfl li{display:flex;align-items:flex-start;gap:.5rem;font-size:.81rem;padding:.28rem 0;line-height:1.4}
+.pfl li.y{color:var(--ink-lt)}.pfl li.n{color:var(--ink-faint)}
+.pb.feat .pfl li.y{color:rgba(255,255,255,.9)}.pb.feat .pfl li.n{color:rgba(255,255,255,.35)}
+.pfl li .c{flex-shrink:0;margin-top:2px;font-weight:700}
+.pfl li.y .c::before{content:'✓';color:var(--green)}
+.pfl li.n .c::before{content:'—';color:var(--ink-faint)}
+.pb.feat .pfl li.y .c::before{color:#fff}
 
-/* ─── PRICING ─── */
-.pricing-section { background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.pricing-inner { max-width: 1100px; margin: 0 auto; }
-.billing-toggle-wrap {
-  display: flex; align-items: center; justify-content: center;
-  gap: 1rem; margin: 2rem 0 3rem;
-}
-.billing-label { font-size: 0.9rem; color: var(--gray); cursor: pointer; }
-.billing-label.active { color: var(--white); font-weight: 600; }
-.toggle-switch {
-  width: 50px; height: 28px; background: var(--green-dk); border-radius: 100px;
-  border: none; cursor: pointer; position: relative; transition: background 0.2s;
-}
-.toggle-switch::after {
-  content: ''; position: absolute; top: 4px; left: 4px;
-  width: 20px; height: 20px; border-radius: 50%; background: white;
-  transition: transform 0.2s;
-}
-.toggle-switch.on::after { transform: translateX(22px); }
-.toggle-switch.on { background: var(--green); }
-.annual-save {
-  font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.6rem;
-  border-radius: 100px; background: rgba(245,166,35,0.15);
-  border: 1px solid rgba(245,166,35,0.3); color: var(--gold);
-}
+/* PERPETUAL */
+.perp-sec{background:var(--cream);border-bottom:2px solid var(--ink)}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:3rem;border:2px solid var(--ink);border-radius:16px;overflow:hidden;background:var(--ink)}
+.pbox{background:var(--cream);padding:2.5rem}
+.pbox.gld{background:var(--ochre);color:#fff}
+.phr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.pname{font-family:'Fraunces',serif;font-weight:900;font-size:1.5rem;letter-spacing:-.03em;color:var(--ink)}
+.pbox.gld .pname{color:#fff}
+.pbadge{font-size:.68rem;font-weight:700;padding:.25rem .65rem;border-radius:100px;letter-spacing:.06em}
+.bblu{background:rgba(52,152,219,.12);border:1px solid rgba(52,152,219,.3);color:#2980B9}
+.bcr{background:rgba(245,240,232,.25);border:1px solid rgba(245,240,232,.4);color:#fff}
+.ppr{font-family:'Fraunces',serif;font-weight:900;font-size:3.2rem;letter-spacing:-.04em;line-height:1;color:var(--green);margin:.5rem 0 .2rem}
+.pbox.gld .ppr{color:#fff}
+.pno{font-size:.82rem;color:var(--ink-muted);margin-bottom:1.75rem}
+.pbox.gld .pno{color:rgba(255,255,255,.75)}
+.pbtn{width:100%;padding:.85rem;border-radius:12px;border:none;font-family:'Instrument Sans',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;margin-bottom:1.75rem;transition:all .2s}
+.pblu{background:rgba(52,152,219,.1);color:#2980B9;border:2px solid #2980B9}.pblu:hover{background:#2980B9;color:#fff;transform:translateY(-1px)}
+.pcr{background:#fff;color:var(--ochre)}.pcr:hover{background:var(--cream);transform:translateY(-1px)}
+.pfeat{list-style:none}
+.pfeat li{display:flex;align-items:flex-start;gap:.65rem;font-size:.85rem;padding:.35rem 0;line-height:1.45;color:var(--ink-lt)}
+.pbox.gld .pfeat li{color:rgba(255,255,255,.9)}
+.pfeat li .ck{font-weight:700;flex-shrink:0;margin-top:2px;color:var(--green)}
+.pbox.gld .pfeat li .ck{color:#fff}
+.roi{margin-top:1.5rem;padding:1rem 1.25rem;background:rgba(255,255,255,.15);border-radius:10px;border:1px solid rgba(255,255,255,.25)}
+.roi p{font-size:.82rem;color:#fff;line-height:1.6}
 
-.pricing-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;
-}
-.plan {
-  background: var(--navy); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 2rem 1.5rem;
-  display: flex; flex-direction: column;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-  position: relative;
-}
-.plan:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
-.plan.pro {
-  border-color: var(--green);
-  background: linear-gradient(145deg, #0F2035 0%, #13293C 100%);
-  box-shadow: 0 0 0 1px rgba(37,211,102,0.4), 0 20px 60px rgba(37,211,102,0.1);
-}
-.plan-badge {
-  position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
-  background: var(--green); color: var(--navy); font-family: 'Syne', sans-serif;
-  font-size: 0.65rem; font-weight: 800; padding: 0.25rem 0.9rem;
-  border-radius: 100px; letter-spacing: 0.1em; white-space: nowrap;
-}
-.plan-color { height: 3px; border-radius: 2px; margin-bottom: 1.5rem; }
-.plan-name {
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem;
-  margin-bottom: 0.25rem;
-}
-.plan-tagline { font-size: 0.8rem; color: var(--gray); margin-bottom: 1.25rem; }
-.plan-price {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: 2.6rem; line-height: 1; letter-spacing: -0.03em; margin-bottom: 0.25rem;
-}
-.plan-price span { font-size: 1rem; font-weight: 400; color: var(--gray); }
-.plan-note { font-size: 0.78rem; color: var(--gray); margin-bottom: 1.5rem; min-height: 1.2rem; }
-.plan-btn {
-  width: 100%; padding: 0.75rem; border-radius: 10px; border: none;
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem;
-  cursor: pointer; letter-spacing: 0.02em; margin-bottom: 1.5rem;
-  transition: all 0.2s;
-}
-.plan-btn:hover { transform: translateY(-1px); }
-.plan-btn.primary { background: var(--green); color: var(--navy); }
-.plan-btn.primary:hover { box-shadow: 0 6px 20px rgba(37,211,102,0.35); }
-.plan-btn.ghost { background: rgba(255,255,255,0.06); color: var(--white); border: 1px solid var(--border); }
-.plan-btn.ghost:hover { background: rgba(255,255,255,0.1); }
-.plan-btn.outlined { background: transparent; color: var(--gold); border: 1.5px solid var(--gold); }
-.plan-btn.outlined:hover { background: rgba(245,166,35,0.08); }
+/* COMPARE */
+.cmp-sec{background:var(--cream-dkr);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.cmpw{overflow-x:auto;margin-top:3rem;border:2px solid var(--ink);border-radius:16px;overflow:hidden}
+table.cmp{width:100%;border-collapse:collapse;font-size:.84rem}
+.cmp th{padding:1rem 1.1rem;font-family:'Fraunces',serif;font-weight:700;font-size:.82rem;text-align:center;border-bottom:2px solid var(--ink);background:var(--ink);color:var(--cream)}
+.cmp th:first-child{text-align:left;min-width:180px}
+.cmp th.hl{background:var(--green);color:#fff}
+.cmp td{padding:.7rem 1.1rem;border-bottom:1px solid var(--border);text-align:center;color:var(--ink-muted)}
+.cmp td:first-child{text-align:left;color:var(--ink);font-weight:500}
+.cmp tr:last-child td{border-bottom:none}
+.cmp tr:hover td{background:var(--green-bg)}
+.cmp .y{color:var(--green);font-weight:700}
+.cmp .n{color:var(--ink-faint)}
+.cmp .hl-c{background:rgba(26,107,60,.06)}
 
-.plan-divider { height: 1px; background: var(--border); margin-bottom: 1.25rem; }
-.plan-limits { margin-bottom: 1.25rem; }
-.limit-row {
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 0.82rem; padding: 0.28rem 0;
-}
-.limit-key { color: var(--gray); }
-.limit-val { color: var(--white); font-weight: 500; }
+/* WHY */
+.why-sec{background:var(--cream);border-top:2px solid var(--ink)}
+.wgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:3rem;border:2px solid var(--ink);border-radius:16px;overflow:hidden;background:var(--ink)}
+.wcard{background:var(--cream);padding:2.25rem 2rem;transition:background .2s}
+.wcard:hover{background:var(--green-bg)}
+.wnum{font-family:'Fraunces',serif;font-weight:900;font-size:4rem;letter-spacing:-.05em;color:var(--cream-dkr);line-height:1;margin-bottom:.5rem}
+.wcard:hover .wnum{color:var(--green-pale)}
+.wico{font-size:1.8rem;margin-bottom:.75rem;display:block}
+.wcard h3{font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem;letter-spacing:-.01em;margin-bottom:.5rem}
+.wcard p{font-size:.84rem;color:var(--ink-muted);line-height:1.65}
 
-.plan-features { list-style: none; flex: 1; }
-.plan-features li {
-  display: flex; align-items: flex-start; gap: 0.55rem;
-  font-size: 0.82rem; padding: 0.28rem 0; line-height: 1.45;
-}
-.plan-features li.yes { color: var(--gray-lt); }
-.plan-features li.no  { color: rgba(122,149,174,0.45); }
-.plan-features li .chk { flex-shrink: 0; margin-top: 2px; }
-.plan-features li.yes .chk::before { content: '✓'; color: var(--green); font-weight: 700; }
-.plan-features li.no  .chk::before { content: '—'; color: rgba(122,149,174,0.35); }
+/* FAQ */
+.faq-sec{background:var(--ink);color:var(--cream);border-top:2px solid var(--ink)}
+.faq-sec .stag{color:var(--ochre-lt)}.faq-sec .stag::after{background:var(--ochre-lt)}
+.faq-sec .sh{color:var(--cream)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:3rem;border:2px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.08)}
+.fi{background:var(--ink);padding:2rem;transition:background .2s}
+.fi:hover{background:var(--ink-lt)}
+.fq{font-family:'Fraunces',serif;font-weight:700;font-size:1rem;color:var(--cream);margin-bottom:.5rem}
+.fa{font-size:.83rem;color:rgba(245,240,232,.6);line-height:1.7}
 
-/* ─── PERPETUAL ─── */
-.perp-section { max-width: 1100px; margin: 0 auto; }
-.perp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3.5rem; }
-.perp-card {
-  border-radius: var(--radius); padding: 2.5rem;
-  border: 1px solid var(--border); background: var(--card);
-  transition: transform 0.2s;
-}
-.perp-card:hover { transform: translateY(-3px); }
-.perp-card.agency {
-  border-color: rgba(245,166,35,0.4);
-  background: linear-gradient(140deg, #18263A 0%, #22354D 100%);
-  box-shadow: 0 0 0 1px rgba(245,166,35,0.2);
-}
-.perp-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
-.perp-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; }
-.perp-tag {
-  font-size: 0.68rem; font-weight: 700; padding: 0.3rem 0.7rem;
-  border-radius: 100px; letter-spacing: 0.05em;
-}
-.tag-blue { background: rgba(52,152,219,0.15); border: 1px solid rgba(52,152,219,0.3); color: #3498DB; }
-.tag-gold { background: rgba(245,166,35,0.15); border: 1px solid rgba(245,166,35,0.3); color: var(--gold); }
-.perp-price {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: 3rem; letter-spacing: -0.03em; line-height: 1;
-  margin: 0.6rem 0 0.25rem;
-}
-.perp-price-note { font-size: 0.82rem; color: var(--gray); margin-bottom: 1.5rem; }
-.perp-btn {
-  width: 100%; padding: 0.85rem; border-radius: 12px; border: none;
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
-  cursor: pointer; margin-bottom: 1.75rem; transition: all 0.2s;
-}
-.perp-btn.solo { background: rgba(52,152,219,0.12); color: #3498DB; border: 1.5px solid #3498DB; }
-.perp-btn.solo:hover { background: rgba(52,152,219,0.22); transform: translateY(-1px); }
-.perp-btn.agency-btn { background: var(--gold); color: var(--navy); }
-.perp-btn.agency-btn:hover { box-shadow: 0 8px 24px rgba(245,166,35,0.35); transform: translateY(-1px); }
-.perp-features { list-style: none; }
-.perp-features li {
-  display: flex; align-items: flex-start; gap: 0.65rem;
-  font-size: 0.85rem; padding: 0.35rem 0; color: var(--gray-lt); line-height: 1.45;
-}
-.perp-features li .chk { color: var(--green); font-weight: 700; flex-shrink: 0; margin-top: 2px; }
-.perp-features li.gold .chk { color: var(--gold); }
-.roi-box {
-  margin-top: 1.5rem; padding: 1rem 1.2rem;
-  background: rgba(245,166,35,0.07); border: 1px solid rgba(245,166,35,0.2);
-  border-radius: 10px;
-}
-.roi-box p { font-size: 0.82rem; color: var(--gold); line-height: 1.6; }
+/* CTA */
+.cta-fin{background:var(--green);color:#fff;padding:8rem 3.5rem;text-align:center;border-top:2px solid var(--ink);position:relative;overflow:hidden}
+.cta-fin::before{content:'SOCIETY BOT';font-family:'Fraunces',serif;font-weight:900;font-style:italic;font-size:clamp(6rem,15vw,20rem);color:rgba(255,255,255,.06);position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);letter-spacing:-.06em;line-height:.9;pointer-events:none;z-index:0;white-space:nowrap}
+.cta-fin *{position:relative;z-index:1}
+.cta-fin h2{font-family:'Fraunces',serif;font-weight:900;font-style:italic;font-size:clamp(2.5rem,5vw,4.5rem);letter-spacing:-.04em;margin-bottom:1rem;color:#fff;line-height:1.05}
+.cta-fin p{font-size:1.05rem;color:rgba(255,255,255,.8);margin-bottom:2.5rem}
+.cbtns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.cwh{padding:1rem 2.5rem;border-radius:100px;background:#fff;color:var(--green);border:none;font-family:'Instrument Sans',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.cwh:hover{box-shadow:0 8px 32px rgba(0,0,0,.2);transform:translateY(-2px)}
+.cbr{padding:1rem 2.5rem;border-radius:100px;background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);font-family:inherit;font-weight:600;font-size:1rem;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.cbr:hover{border-color:#fff;background:rgba(255,255,255,.1)}
+.cnote{margin-top:1.5rem;font-size:.82rem;color:rgba(255,255,255,.65)}
+.cnote strong{color:#fff}
 
-/* ─── COMPARISON TABLE ─── */
-.compare-section { background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-.compare-inner { max-width: 1100px; margin: 0 auto; }
-.compare-wrap { overflow-x: auto; margin-top: 3rem; border-radius: var(--radius); border: 1px solid var(--border); }
-table.compare {
-  width: 100%; border-collapse: collapse; font-size: 0.85rem;
-}
-.compare th {
-  padding: 1rem 1.1rem; font-family: 'Syne', sans-serif; font-weight: 700;
-  font-size: 0.78rem; letter-spacing: 0.05em; text-align: center;
-  border-bottom: 1px solid var(--border); background: var(--navy-2);
-  color: var(--gray);
-}
-.compare th:first-child { text-align: left; min-width: 200px; }
-.compare th.hl { color: var(--green); background: rgba(37,211,102,0.05); }
-.compare td {
-  padding: 0.7rem 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.04);
-  text-align: center; color: var(--gray);
-}
-.compare td:first-child { text-align: left; color: var(--white); }
-.compare tr:hover td { background: rgba(255,255,255,0.02); }
-.compare .y { color: var(--green); font-weight: 600; }
-.compare .n { color: rgba(122,149,174,0.35); }
-.compare .hl-col { background: rgba(37,211,102,0.03); }
+/* FOOTER */
+footer{background:var(--ink);border-top:2px solid var(--ink);padding:2rem 3.5rem;display:flex;justify-content:space-between;align-items:center;color:rgba(245,240,232,.5);font-size:.82rem}
+footer a{color:var(--ochre-lt);text-decoration:none}
+footer a:hover{text-decoration:underline}
 
-/* ─── FAQ ─── */
-.faq-section { max-width: 1100px; margin: 0 auto; }
-.faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 3rem; }
-.faq-item {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 14px; padding: 1.5rem;
-  transition: border-color 0.2s;
-}
-.faq-item:hover { border-color: rgba(37,211,102,0.2); }
-.faq-q {
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.92rem;
-  margin-bottom: 0.5rem; color: var(--white);
-}
-.faq-a { font-size: 0.83rem; color: var(--gray); line-height: 1.65; }
+/* WA FLOAT */
+.wa-fl{position:fixed;bottom:2rem;right:2rem;z-index:500;width:56px;height:56px;border-radius:50%;background:var(--wa);display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 6px 24px rgba(37,211,102,.5);cursor:pointer;transition:transform .2s,box-shadow .2s;text-decoration:none;border:3px solid #fff}
+.wa-fl:hover{transform:scale(1.1) rotate(-5deg);box-shadow:0 10px 32px rgba(37,211,102,.6)}
 
-/* ─── CTA BOTTOM ─── */
-.cta-section {
-  position: relative; overflow: hidden; text-align: center;
-  padding: 7rem 4rem;
-  background: radial-gradient(ellipse 70% 60% at 50% 100%, rgba(37,211,102,0.12) 0%, transparent 70%);
-}
-.cta-section h2 {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -0.02em; margin-bottom: 1rem;
-}
-.cta-section p { color: var(--gray); font-size: 1rem; margin-bottom: 2.5rem; }
-.cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-.cta-primary {
-  background: var(--green); color: var(--navy);
-  border: none; border-radius: 100px; padding: 0.9rem 2.5rem;
-  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
-  cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block;
-}
-.cta-primary:hover { box-shadow: 0 8px 32px rgba(37,211,102,0.4); transform: translateY(-2px); }
-.cta-ghost {
-  background: transparent; color: var(--white);
-  border: 1px solid var(--border); border-radius: 100px; padding: 0.9rem 2.5rem;
-  font-family: inherit; font-weight: 500; font-size: 1rem;
-  cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block;
-}
-.cta-ghost:hover { border-color: rgba(255,255,255,0.4); }
-.cta-note { margin-top: 1.5rem; font-size: 0.82rem; color: var(--gray); }
-.cta-note span { color: var(--green); }
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
 
-/* ─── FOOTER ─── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 2rem 4rem;
-  display: flex; justify-content: space-between; align-items: center;
-  color: var(--gray); font-size: 0.82rem;
+/* RESPONSIVE */
+@media(max-width:1100px){
+  nav{padding:1rem 1.5rem}.nav-links{display:none}
+  .hero{grid-template-columns:1fr;min-height:auto}.hero-right{display:none}
+  .steps{grid-template-columns:1fr 1fr}
+  .step:nth-child(2){border-right:none}.step:nth-child(3){border-top:2px solid var(--ink)}
+  .bento{grid-template-columns:1fr 1fr}.bc.tall{grid-row:span 1}.bc.wide{grid-column:span 2}
+  .vlay{grid-template-columns:1fr}
+  .plans{grid-template-columns:1fr 1fr}.pg{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr}.wgrid{grid-template-columns:1fr 1fr}
+  .sec{padding:4rem 1.5rem}
+  footer{flex-direction:column;gap:.75rem;text-align:center}
 }
-footer a { color: var(--green); text-decoration: none; }
-footer a:hover { text-decoration: underline; }
-
-/* ─── WHATSAPP FLOAT ─── */
-.wa-float {
-  position: fixed; bottom: 2rem; right: 2rem; z-index: 500;
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--green); display: flex; align-items: center; justify-content: center;
-  font-size: 1.6rem; box-shadow: 0 6px 24px rgba(37,211,102,0.5);
-  cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
-  text-decoration: none;
-}
-.wa-float:hover { transform: scale(1.1); box-shadow: 0 10px 32px rgba(37,211,102,0.6); }
-.wa-tooltip {
-  position: absolute; right: 68px; top: 50%; transform: translateY(-50%);
-  background: var(--white); color: var(--navy);
-  padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.78rem;
-  font-weight: 600; white-space: nowrap; pointer-events: none;
-  opacity: 0; transition: opacity 0.2s;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-}
-.wa-tooltip::after {
-  content: ''; position: absolute; top: 50%; right: -6px;
-  transform: translateY(-50%);
-  border: 6px solid transparent; border-left-color: var(--white);
-  border-right: none;
-}
-.wa-float:hover .wa-tooltip { opacity: 1; }
-
-/* ─── RESPONSIVE ─── */
-@media(max-width: 1024px) {
-  nav { padding: 1rem 2rem; }
-  .nav-links { display: none; }
-  section { padding: 5rem 2rem; }
-  .saas-grid, .pricing-grid { grid-template-columns: repeat(2,1fr); }
-  .how-steps { grid-template-columns: 1fr 1fr; }
-  .how-steps::before { display: none; }
-  .features-grid { grid-template-columns: 1fr 1fr; }
-  .feat-card.large { grid-column: span 2; }
-  .problem-grid { grid-template-columns: 1fr; }
-  footer { flex-direction: column; gap: 0.75rem; text-align: center; }
-}
-@media(max-width: 720px) {
-  .hero { padding: 5rem 1.5rem 3rem; }
-  .stats-bar { flex-direction: column; }
-  .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
-  .stat-item:last-child { border-bottom: none; }
-  .pricing-grid, .how-steps, .features-grid, .faq-grid, .perp-grid, .notif-grid { grid-template-columns: 1fr; }
-  .feat-card.large { grid-column: span 1; grid-template-columns: 1fr; }
-  section { padding: 4rem 1.5rem; }
-  nav { padding: 1rem 1.5rem; }
+@media(max-width:700px){
+  .hero{padding:4rem 1.5rem 3rem}
+  .prob-grid,.steps,.bento,.plans,.notif-grid,.wgrid{grid-template-columns:1fr}
+  .pc{border-right:none;border-bottom:1px solid rgba(255,255,255,.12)}.pc:last-child{border-bottom:none}
+  .step{border-right:none;border-bottom:2px solid var(--ink)}.step:last-child{border-bottom:none}
+  .bc.wide{grid-column:span 1}
 }
 </style>
 </head>
 <body>
 
-<!-- WHATSAPP FLOAT -->
-<a class="wa-float" href="https://wa.me/919147097058?text=Hi" target="_blank" aria-label="Chat on WhatsApp">
-  <span style="color:#fff">💬</span>
-  <div class="wa-tooltip">Try Demo Free →</div>
-</a>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="cur-ring"></div>
+<a class="wa-fl" href="https://wa.me/919147097058?text=Hi" target="_blank" aria-label="Chat on WhatsApp">💬</a>
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="logo">
-    <div class="logo-icon">💬</div>
-    SocietyBot
-  </a>
+  <a href="#" class="logo"><div class="logo-mark">S</div>SocietyBot</a>
   <ul class="nav-links">
     <li><a href="#how">How it Works</a></li>
     <li><a href="#features">Features</a></li>
+    <li><a href="#visitors">Visitor Mgmt</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
-  <div class="nav-cta">
-    <a class="btn-demo" href="https://wa.me/919147097058?text=Hi" target="_blank">Try Demo</a>
-    <a class="btn-start" href="#pricing">View Plans →</a>
+  <div class="nav-right">
+    <a class="nav-ghost" href="https://wa.me/919147097058?text=Hi" target="_blank">Try Demo</a>
+    <a class="nav-solid" href="#pricing">View Plans →</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-  </div>
-  <div class="hero-inner">
-    <div class="hero-badge">🟢 WhatsApp-Native · No App Downloads Needed</div>
-    <h1>
-      Society Management<br>
-      <span class="accent">on WhatsApp.</span><br>
-      <span class="dim">Zero Chaos.</span>
-    </h1>
-    <p class="hero-sub">
-      Automate maintenance payments, complaint tracking and auto-reminders — all inside WhatsApp that residents already use. No new apps, no logins, no training.
-    </p>
+  <div class="hero-left">
+    <div class="hero-eyebrow">WhatsApp-Native Automation</div>
+    <h1>Your society,<br><em>managed</em><br>on<br><span class="stroke">WhatsApp.</span></h1>
+    <p class="hero-desc">Maintenance payments, complaint tracking, visitor management and auto-reminders — all inside WhatsApp residents already use. No app downloads. No training. Live in 30 minutes.</p>
     <div class="hero-actions">
-      <a class="hero-btn-primary" href="https://wa.me/919147097058?text=Hi" target="_blank">
-        💬 Try Free Demo
-      </a>
-      <a class="hero-btn-ghost" href="#how">
-        See How It Works ↓
-      </a>
+      <a class="btn-grn" href="https://wa.me/919147097058?text=Hi" target="_blank">💬 Try Free Demo</a>
+      <a class="btn-out" href="#how">See How It Works ↓</a>
     </div>
-    <div class="stats-bar">
-      <div class="stat-item">
-        <div class="stat-num">30s</div>
-        <div class="stat-label">To Pay Maintenance</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">0</div>
-        <div class="stat-label">App Downloads</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">30 min</div>
-        <div class="stat-label">Setup Time</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">2 mo</div>
-        <div class="stat-label">Free Trial</div>
+    <div class="hero-ticker">
+      <div><div class="tk-num">30<span>s</span></div><div class="tk-lbl">to pay dues</div></div>
+      <div><div class="tk-num">0</div><div class="tk-lbl">app downloads</div></div>
+      <div><div class="tk-num">30<span>m</span></div><div class="tk-lbl">setup time</div></div>
+      <div><div class="tk-num">2<span>mo</span></div><div class="tk-lbl">free trial</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="fl fl1"><span class="fldot" style="background:var(--wa)"></span>WhatsApp Native</div>
+    <div class="fl fl2">✅ Payment Confirmed</div>
+    <div class="fl fl3">🚗 Visitor at Gate!</div>
+    <div class="phone">
+      <div class="ph-frame">
+        <div class="ph-screen">
+          <div class="ph-bar"><span>9:41</span><span>●●●</span></div>
+          <div class="ph-head">
+            <div class="ph-av">S</div>
+            <div><div style="font-weight:700;font-size:10px">SocietyBot</div><div style="font-size:8px;color:rgba(255,255,255,.7)">online</div></div>
+          </div>
+          <div class="ph-msgs">
+            <div class="m mi"><strong>Hey Kumar! 👋 Flat 204</strong>What can I help you with?<div class="mt">9:33 AM</div></div>
+            <div class="m mo">Pay Maintenance<div class="mt">9:33 ✓✓</div></div>
+            <div class="m mi">💰 <strong>₹1,500 due</strong>rzp.io/sunrise-soc<br><span class="mbadge">UPI · Card · Net Banking</span><div class="mt">9:33 AM</div></div>
+            <div class="m mi">✅ <strong>Payment Received!</strong>Flat 204 · ₹1,500 · UPI<br>Receipt: RCT-20250312<div class="mt">9:34 AM</div></div>
+            <div style="align-self:center;font-size:8px;color:#999;padding:3px 0">— Visitor Alert —</div>
+            <div class="m mi">🚗 <strong>Visitor at Gate!</strong>Ravi Sharma (Swiggy)<br>KA-01-AB-1234<br><span class="mbadge">Allow or Deny?</span><div class="mt">9:41 AM</div></div>
+            <div class="m mo">Allow<div class="mt">9:41 ✓✓</div></div>
+            <div class="m mi" style="background:#DCF8C6">✅ Entry Approved. Guard notified.<div class="mt">9:41 AM</div></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- MARQUEE -->
+<div class="mqb">
+  <div class="mqt">
+    <span>Maintenance Payments</span><span>Complaint Tracking</span><span>Auto Reminders</span><span>Visitor Management</span><span>Admin Dashboard</span><span>Razorpay Integration</span><span>Zero App Downloads</span><span>30 Min Setup</span><span>WhatsApp Native</span>
+    <span>Maintenance Payments</span><span>Complaint Tracking</span><span>Auto Reminders</span><span>Visitor Management</span><span>Admin Dashboard</span><span>Razorpay Integration</span><span>Zero App Downloads</span><span>30 Min Setup</span><span>WhatsApp Native</span>
+  </div>
+</div>
+
 <!-- PROBLEM -->
-<section class="problem-section">
-  <div style="max-width:1100px;margin:0 auto">
-    <div class="section-tag">The Problem</div>
-    <h2 class="section-title">Does your society face any of these?</h2>
-    <div class="problem-grid">
-      <div class="problem-card">
-        <div class="problem-icon">💸</div>
-        <h3>Chasing Maintenance Dues</h3>
-        <p>Treasurer spending 8–10 hrs/month sending reminders, reconciling payments, and maintaining paper trails of who paid and who didn't.</p>
-      </div>
-      <div class="problem-card">
-        <div class="problem-icon">📋</div>
-        <h3>Complaints Buried in WhatsApp Groups</h3>
-        <p>Plumbing leaks, electrical faults, and security issues reported in the group chat — then forgotten, untracked, never resolved.</p>
-      </div>
-      <div class="problem-card">
-        <div class="problem-icon">📁</div>
-        <h3>No Digital Records</h3>
-        <p>Payments tracked in notebooks. Complaint history non-existent. No data on who raised what issue, when it was resolved, or how much was collected.</p>
-      </div>
+<section class="sec prob-sec">
+  <div class="sec-inner">
+    <div class="stag">The Problem</div>
+    <h2 class="sh">Does your society face<br><em>any of these?</em></h2>
+    <div class="prob-grid reveal">
+      <div class="pc"><span class="pc-ico">💸</span><h3>Chasing Maintenance Dues</h3><p>Treasurer spending 8–10 hrs/month sending reminders, reconciling payments, and maintaining paper trails of who paid and who didn't.</p></div>
+      <div class="pc"><span class="pc-ico">📋</span><h3>Complaints Buried in Groups</h3><p>Plumbing leaks, electrical faults, security issues reported in the group chat — then forgotten, untracked, never resolved.</p></div>
+      <div class="pc"><span class="pc-ico">🚗</span><h3>Untracked Visitors & Deliveries</h3><p>No system to pre-approve visitors, verify delivery agents at the gate, or maintain any log of who entered your society and when.</p></div>
     </div>
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
-<section id="how">
-  <div class="how-section">
-    <div class="section-tag center">How It Works</div>
-    <h2 class="section-title center">Live in 30 minutes. Works on existing WhatsApp.</h2>
-    <p class="section-sub center">No app downloads, no resident training, no lock-in. Runs entirely inside WhatsApp.</p>
-    <div class="how-steps">
-      <div class="step-card">
-        <div class="step-num">1</div>
-        <div class="step-icon">👋</div>
-        <h3>Resident sends Hi</h3>
-        <p>Bot greets & registers them in 2 messages. Name + flat number. Done. No forms, no links.</p>
-        <div class="step-detail">⚡ 2 messages to register</div>
+<section class="sec how-sec" id="how">
+  <div class="sec-inner">
+    <div class="stag">How It Works</div>
+    <h2 class="sh">Live in 30 minutes.<br><em>Works on existing WhatsApp.</em></h2>
+    <p class="ssub" style="margin-bottom:0">No app downloads, no resident training. Runs entirely inside WhatsApp that residents already have.</p>
+    <div class="steps reveal">
+      <div class="step"><div class="sn">01</div><span class="sico">👋</span><h3>Resident sends Hi</h3><p>Bot greets & registers in 2 messages. Name + flat number. Done. No forms, no links, no downloads.</p><span class="schip">⚡ 2 messages to register</span></div>
+      <div class="step"><div class="sn">02</div><span class="sico">💰</span><h3>Pays Maintenance</h3><p>Taps Pay → gets Razorpay link → pays via UPI in 30 sec. Digital receipt auto-sent instantly on success.</p><span class="schip">💳 UPI / Card / Net Banking</span></div>
+      <div class="step"><div class="sn">03</div><span class="sico">🔧</span><h3>Raises a Complaint</h3><p>Picks from 10 categories, describes issue, gets a Complaint ID. Gets WhatsApp updates as admin resolves it.</p><span class="schip">📋 10 categories, tracking IDs</span></div>
+      <div class="step" style="border-right:none"><div class="sn">04</div><span class="sico">🚗</span><h3>Approves Visitors</h3><p>Guard logs visitor via WhatsApp. Resident gets instant notification and approves or denies entry with one tap.</p><span class="schip">🔔 Instant gate alerts</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES BENTO -->
+<section class="sec feat-sec" id="features">
+  <div class="sec-inner">
+    <div class="stag">Features</div>
+    <h2 class="sh">Everything built-in.<br><em>Nothing to install.</em></h2>
+    <div class="bento reveal">
+      <div class="bc tall">
+        <span class="bi">💬</span>
+        <div class="bt">Full WhatsApp Conversation Flow</div>
+        <div class="bd">From "Hi" to paid receipt — the entire resident journey inside WhatsApp. Interactive buttons, lists, payment links, tracking IDs, visitor approvals.</div>
+        <div class="btags">
+          <div class="btag">Interactive buttons & category lists</div>
+          <div class="btag">10-category complaint system with tracking IDs</div>
+          <div class="btag">Payment receipts auto-sent on success</div>
+          <div class="btag">Visitor approval with Allow / Deny buttons</div>
+        </div>
+        <div class="mchat">
+          <div class="mc mci">Hey Kumar! 👋 Flat 204 — what can I help with?</div>
+          <div class="mc mco">Raise Complaint</div>
+          <div class="mc mci">Select category: 🚰 Plumbing · 💡 Electrical · 🔒 Security…</div>
+          <div class="mc mco">Plumbing</div>
+          <div class="mc mci">✅ CMP-20250312-042 registered!</div>
+          <div class="mc mcs">Status: Open → Admin notified</div>
+        </div>
       </div>
-      <div class="step-card">
-        <div class="step-num">2</div>
-        <div class="step-icon">💰</div>
-        <h3>Pays Maintenance</h3>
-        <p>Resident taps Pay → gets Razorpay link → pays via UPI in 30 sec. Digital receipt sent instantly.</p>
-        <div class="step-detail">💳 UPI / Card / Net Banking</div>
+      <div class="bc gc">
+        <span class="bi">💳</span>
+        <div class="bt">Razorpay Payments</div>
+        <div class="bd">UPI, card & net banking. Payments land directly in your society's Razorpay account. Auto-reconciled, zero manual entry.</div>
+        <div class="btags"><div class="btag">Your own Razorpay account (Starter+)</div></div>
       </div>
-      <div class="step-card">
-        <div class="step-num">3</div>
-        <div class="step-icon">🔧</div>
-        <h3>Raises a Complaint</h3>
-        <p>Picks category (Plumbing, Electrical, Security…), describes issue, gets a Complaint ID for tracking.</p>
-        <div class="step-detail">📋 10 categories, instant ID</div>
+      <div class="bc">
+        <span class="bi">🔔</span>
+        <div class="bt">Auto Payment Reminders</div>
+        <div class="bd">Daily cron checks who hasn't paid and sends escalating reminders. Friendly first, urgent if ignored. Zero manual effort.</div>
+        <div class="btags"><div class="btag">Runs every day at 10 AM IST</div></div>
       </div>
-      <div class="step-card">
-        <div class="step-num">4</div>
-        <div class="step-icon">🔔</div>
-        <h3>Gets Auto-Reminded</h3>
-        <p>If unpaid, bot sends escalating reminders every 2 days. Zero manual effort from your committee.</p>
-        <div class="step-detail">🤖 Fully automated</div>
+      <div class="bc ic">
+        <span class="bi">📊</span>
+        <div class="bt">Admin Dashboard</div>
+        <div class="bd">Web dashboard to manage payments, complaints, users, and visitor logs — with WhatsApp notifications auto-sent on every update.</div>
+        <div class="btags"><div class="btag">Available on Pro and above</div></div>
+      </div>
+      <div class="bc wide oc">
+        <span class="bi">🔒</span>
+        <div class="bt">Secure & Yours</div>
+        <div class="bd">JWT-based admin auth. Data stays in your own PostgreSQL database — no lock-in. Perpetual license includes full source code for complete ownership.</div>
+        <div class="btags">
+          <div class="btag">Full source code on Perpetual License</div>
+          <div class="btag">Self-host on any server: Render, Railway, VPS</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES -->
-<section class="features-section" id="features">
-  <div class="features-inner">
-    <div class="section-tag">Features</div>
-    <h2 class="section-title">Everything your committee needs.<br>Nothing residents need to install.</h2>
-    <p class="section-sub">Built specifically for Indian housing societies. Integrated with Razorpay for payments and a full admin dashboard to manage everything.</p>
-    <div class="features-grid">
-      <!-- Large card -->
-      <div class="feat-card large">
-        <div class="feat-content">
-          <div class="feat-icon">💬</div>
-          <h3>Full WhatsApp Conversation Flow</h3>
-          <p>From "Hi" to paid receipt — the entire resident journey happens in WhatsApp. Buttons, lists, payment links, tracking IDs. No friction, no drop-off.</p>
-          <div class="feat-detail">✓ Interactive buttons & category lists</div>
-          <div class="feat-detail">✓ 10-category complaint system with tracking IDs</div>
-          <div class="feat-detail">✓ Payment receipts auto-sent on success</div>
+<!-- VISITOR MANAGEMENT -->
+<section class="sec vis-sec" id="visitors">
+  <div class="sec-inner">
+    <div class="stag">Visitor Management System</div>
+    <h2 class="sh">Know who's entering<br>your society. <em>In real-time.</em></h2>
+    <p class="ssub">Guard logs visitors via WhatsApp. Resident gets instant notification and approves or denies — all without leaving WhatsApp.</p>
+    <div class="vlay reveal">
+      <div class="vfeats">
+        <div class="vf">
+          <div class="vico" style="background:rgba(193,127,36,.1)">🚗</div>
+          <div><h3>Instant Gate Alerts to Residents</h3><p>When a visitor arrives, guard logs their name, purpose and vehicle via WhatsApp. Resident is notified instantly with all details.</p><div class="vdet">⚡ Notification in under 5 seconds</div></div>
         </div>
-        <div class="feat-visual">
-          <div class="msg-bubble msg-in">Hey Kumar! 👋 Flat 204<br>What can I help you with today?</div>
-          <div class="msg-bubble msg-out">Pay Maintenance</div>
-          <div class="msg-bubble msg-in">💰 Maintenance Payment<br><strong>Flat: 204 | Amount: ₹1,500</strong><br>Click to pay: rzp.io/sunrise-soc<br>✅ UPI · Card · Net Banking</div>
-          <div class="msg-bubble msg-in">✅ Payment Received!<br>Flat 204 · ₹1,500 · UPI<br>Receipt: RCT-20250312</div>
-          <div class="msg-time">7:33 PM ✓✓</div>
+        <div class="vf">
+          <div class="vico" style="background:rgba(37,211,102,.1)">✅</div>
+          <div><h3>One-Tap Allow / Deny</h3><p>Resident taps Allow or Deny right from WhatsApp notification. Guard is immediately informed. No phone calls, no back-and-forth.</p><div class="vdet">💬 Resident approves without leaving WhatsApp</div></div>
+        </div>
+        <div class="vf">
+          <div class="vico" style="background:rgba(181,58,47,.1)">🔐</div>
+          <div><h3>Pre-Approved Visitor Codes</h3><p>Residents generate a time-limited OTP or code for expected guests — delivery agents, domestic workers, family visitors. Valid for set hours or single entry.</p><div class="vdet">🔑 Time-limited or single-entry codes</div></div>
+        </div>
+        <div class="vf">
+          <div class="vico" style="background:rgba(52,152,219,.1)">📋</div>
+          <div><h3>Full Visitor Log & Admin View</h3><p>Every entry logged with timestamp, flat number, purpose and guard ID. Admin can search and export visitor history from the dashboard.</p><div class="vdet">📊 Searchable log in admin dashboard</div></div>
+        </div>
+        <div class="vf">
+          <div class="vico" style="background:rgba(193,127,36,.1)">🚚</div>
+          <div><h3>Delivery & Service Tracking</h3><p>Tag entries as Delivery, Domestic Worker, Guest, Cab, Emergency. Filter by type. Know who entered and when — every day.</p><div class="vdet">🏷 Categorised entry types</div></div>
         </div>
       </div>
-
-      <div class="feat-card">
-        <div class="feat-icon">💳</div>
-        <h3>Razorpay Payments</h3>
-        <p>Instant UPI, card and net banking via Razorpay. Payments land directly in your society's bank account. Auto-reconciled, zero manual entry.</p>
-        <div class="feat-detail">✓ Your own Razorpay account (Starter+)</div>
-      </div>
-
-      <div class="feat-card">
-        <div class="feat-icon">📊</div>
-        <h3>Admin Dashboard</h3>
-        <p>Web-based dashboard to view all payments, manage complaints, update statuses, and assign staff — with WhatsApp notifications auto-sent to residents on every update.</p>
-        <div class="feat-detail">✓ Available on Pro plan and above</div>
-      </div>
-
-      <div class="feat-card">
-        <div class="feat-icon">🔔</div>
-        <h3>Auto Payment Reminders</h3>
-        <p>Bot checks daily who hasn't paid this month and sends escalating reminders — friendly first, urgent if ignored. Rotates message templates to avoid spam feel.</p>
-        <div class="feat-detail">✓ Runs daily at 10 AM IST automatically</div>
-      </div>
-
-      <div class="feat-card">
-        <div class="feat-icon">🔧</div>
-        <h3>Complaint Management</h3>
-        <p>Residents raise complaints by category, get a unique Complaint ID, and receive real-time WhatsApp updates when status changes — Open → In Progress → Resolved.</p>
-        <div class="feat-detail">✓ 10 categories: Plumbing, Electrical, Security…</div>
-      </div>
-
-      <div class="feat-card">
-        <div class="feat-icon">🔒</div>
-        <h3>Secure & Self-Contained</h3>
-        <p>JWT-based admin authentication. Data stays in your own PostgreSQL database — no lock-in to our servers. All data is yours, always.</p>
-        <div class="feat-detail">✓ Perpetual license: full source code access</div>
+      <div>
+        <div class="vflow reveal">
+          <div class="vfh"><div><h3>🚗 Visitor Entry Flow</h3><span>Step-by-step at the gate</span></div></div>
+          <div class="vfb">
+            <div class="vfs"><div class="vfn">1</div><div class="vfc"><h4>Guard logs visitor on WhatsApp</h4><p>Types visitor name, flat number, purpose & vehicle. Bot creates entry record with timestamp.</p><span class="vtag vto">Guard's WhatsApp</span></div></div>
+            <div class="vfs"><div class="vfn">2</div><div class="vfc"><h4>Resident gets instant WhatsApp alert</h4><p>Flat owner receives notification with full visitor details and Allow / Deny buttons.</p><span class="vtag vtg">Resident notified instantly</span></div></div>
+            <div class="vfs"><div class="vfn">3</div><div class="vfc"><h4>One-tap approval or denial</h4><p>Resident taps Allow → guard's WhatsApp shows ✅ Entry Approved. Visitor enters. If denied, guard informed immediately.</p><span class="vtag vtg">✅ Allow</span>&nbsp;<span class="vtag vtr">❌ Deny</span></div></div>
+            <div class="vfs"><div class="vfn">4</div><div class="vfc"><h4>Entry logged automatically</h4><p>Visitor record saved with timestamp, decision, and guard identity. Visible in admin dashboard with full search and export.</p><span class="vtag vto">Logged forever</span></div></div>
+          </div>
+        </div>
+        <div class="vmn reveal">
+          <div class="vmnh"><div class="vmnav">💬</div><div><div class="vmn-nm">SocietyBot</div><div class="vmn-sb">Visitor alert for Flat 204</div></div></div>
+          <div class="vmn-body">🚗 <strong>Visitor at Gate!</strong><br><br><strong>Name:</strong> Ravi Sharma<br><strong>Purpose:</strong> Swiggy Delivery<br><strong>Vehicle:</strong> KA-01-AB-1234<br><strong>Gate:</strong> Main Gate · <strong>Time:</strong> 9:41 AM<br><strong>Guard:</strong> Suresh (Guard #2)</div>
+          <div class="vmn-btns"><button class="vmn-btn vba">✅ Allow Entry</button><button class="vmn-btn vbd">❌ Deny</button></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- NOTIFICATIONS -->
-<section>
-  <div class="notif-section">
-    <div class="section-tag">WhatsApp Notifications</div>
-    <h2 class="section-title">Residents stay informed automatically.</h2>
-    <p class="section-sub">Every admin action triggers a WhatsApp message to the resident. No manual messaging needed.</p>
-    <div class="notif-grid">
-      <div class="notif-card">
-        <div class="notif-header">
-          <div class="notif-avatar">S</div>
-          <div><div class="notif-from">SocietyBot</div><div class="notif-tag">→ Payment Confirmation</div></div>
-        </div>
-        <div class="notif-body">
-          ✅ <strong>Payment Received!</strong><br><br>
-          🏠 Flat 204 · Sunrise Apartments<br>
-          💵 ₹1,500 · UPI<br>
-          📅 12 Mar 2025, 07:33 PM<br>
-          🆔 pay_QKD9… · 🧾 RCT-20250312<br><br>
-          Thank you! 🙏
-        </div>
-        <div class="notif-trigger">⚡ Triggered: When Razorpay webhook fires</div>
-      </div>
-      <div class="notif-card">
-        <div class="notif-header">
-          <div class="notif-avatar">S</div>
-          <div><div class="notif-from">SocietyBot</div><div class="notif-tag">→ Complaint Resolved</div></div>
-        </div>
-        <div class="notif-body">
-          ✅ <strong>Complaint Resolved</strong><br><br>
-          <strong>ID:</strong> CMP-20250312-042<br>
-          <strong>Category:</strong> 🚰 Plumbing<br>
-          <strong>Resolution:</strong> Pipe leak fixed by maintenance team<br>
-          <strong>Resolved on:</strong> 12 Mar 2025, 02:30 PM<br><br>
-          Thank you for your patience! 🙏
-        </div>
-        <div class="notif-trigger">⚡ Triggered: When admin marks resolved</div>
-      </div>
-      <div class="notif-card">
-        <div class="notif-header">
-          <div class="notif-avatar">S</div>
-          <div><div class="notif-from">SocietyBot</div><div class="notif-tag">→ Payment Reminder</div></div>
-        </div>
-        <div class="notif-body">
-          🏠 <strong>Maintenance Reminder</strong><br><br>
-          Hi Kumar! 👋<br><br>
-          This is a gentle reminder that your maintenance fee for <strong>March 2025</strong> is due.<br><br>
-          🏠 Flat 204 · 💰 ₹1,500<br><br>
-          Type <strong>PAY</strong> to make your payment easily.
-        </div>
-        <div class="notif-trigger">⚡ Triggered: Daily cron job, 10 AM IST</div>
-      </div>
-      <div class="notif-card">
-        <div class="notif-header">
-          <div class="notif-avatar">S</div>
-          <div><div class="notif-from">SocietyBot</div><div class="notif-tag">→ Complaint Update</div></div>
-        </div>
-        <div class="notif-body">
-          🔔 <strong>Complaint Update</strong><br><br>
-          <strong>ID:</strong> CMP-20250312-042<br>
-          <strong>Status:</strong> 🆕 Open → ⏳ In Progress<br>
-          <strong>Category:</strong> 💡 Electrical<br>
-          <strong>Assigned to:</strong> Maintenance Team — Rajesh<br><br>
-          Your complaint is being addressed. 
-        </div>
-        <div class="notif-trigger">⚡ Triggered: When admin assigns complaint</div>
-      </div>
+<section class="sec notif-sec">
+  <div class="sec-inner">
+    <div class="stag">Auto WhatsApp Notifications</div>
+    <h2 class="sh">Residents stay informed.<br><em>Automatically.</em></h2>
+    <p class="ssub">Every event triggers a WhatsApp message. Zero manual messaging by the committee.</p>
+    <div class="notif-grid reveal">
+      <div class="ncard gnc"><div class="nch"><span class="nct">Payment Confirmation</span><span class="ntr">on Razorpay webhook</span></div><div class="ncb">✅ <strong>Payment Received!</strong><br><br>🏠 Flat 204 · Sunrise Apartments<br>💵 ₹1,500 · UPI · 12 Mar 2025, 7:33 PM<br>🆔 pay_QKD9… · 🧾 RCT-20250312<br><br>Thank you! 🙏</div></div>
+      <div class="ncard onc"><div class="nch"><span class="nct">Visitor Gate Alert</span><span class="ntr">on guard log</span></div><div class="ncb">🚗 <strong>Visitor at Gate!</strong><br><br><strong>Name:</strong> Ravi Sharma (Swiggy)<br><strong>Vehicle:</strong> KA-01-AB-1234<br><strong>Gate:</strong> Main · <strong>Time:</strong> 9:41 AM<br><br>[Allow Entry] &nbsp; [Deny]</div></div>
+      <div class="ncard"><div class="nch"><span class="nct">Complaint Resolved</span><span class="ntr">on admin update</span></div><div class="ncb">✅ <strong>Complaint Resolved</strong><br><br><strong>ID:</strong> CMP-20250312-042<br><strong>Category:</strong> 🚰 Plumbing<br><strong>Resolution:</strong> Pipe leak fixed by maintenance team<br><strong>Resolved:</strong> 12 Mar, 2:30 PM<br><br>Thank you for your patience! 🙏</div></div>
+      <div class="ncard inc"><div class="nch"><span class="nct">Payment Reminder</span><span class="ntr">daily at 10 AM IST</span></div><div class="ncb">🏠 <strong>Maintenance Reminder</strong><br><br>Hi Kumar! 👋<br><br>Your maintenance for <strong>March 2025</strong> is due.<br><br>🏠 Flat 204 · 💰 ₹1,500<br><br>Type <strong>PAY</strong> to pay now.</div></div>
     </div>
   </div>
 </section>
 
 <!-- PRICING -->
-<section class="pricing-section" id="pricing">
-  <div class="pricing-inner">
-    <div class="section-tag center">SaaS Plans</div>
-    <h2 class="section-title center">Simple, transparent pricing.</h2>
-    <p class="section-sub center">All plans include Payments, Complaints & Auto Reminders. We host everything.</p>
-
-    <div class="billing-toggle-wrap">
-      <span class="billing-label active" id="lbl-m">Monthly</span>
-      <button class="toggle-switch" id="billing-toggle" onclick="toggleBilling()"></button>
-      <span class="billing-label" id="lbl-a">Annual</span>
-      <span class="annual-save" id="annual-save" style="opacity:0.4">Save 2 months</span>
+<section class="sec pri-sec" id="pricing">
+  <div class="sec-inner">
+    <div class="stag">SaaS Plans</div>
+    <h2 class="sh">Simple, transparent<br><em>pricing.</em></h2>
+    <p class="ssub">All plans include Payments, Complaints, Visitor Management & Auto Reminders. We host everything.</p>
+    <div class="bil-row">
+      <span class="bl on" id="blm">Monthly</span>
+      <button class="tog" id="bltog" onclick="toggleBilling()"></button>
+      <span class="bl" id="bla">Annual</span>
+      <span class="sav" id="sv" style="opacity:.4">Save 2 months</span>
     </div>
-
-    <div class="pricing-grid">
-      <!-- Trial -->
-      <div class="plan">
-        <div class="plan-color" style="background:#3498DB"></div>
-        <div class="plan-name" style="color:#3498DB">Trial</div>
-        <div class="plan-tagline">Developer / Small Society</div>
-        <div class="plan-price monthly-p" style="color:#3498DB">₹499<span>/mo</span></div>
-        <div class="plan-price annual-p" style="color:#3498DB;display:none">₹4,990<span>/yr</span></div>
-        <div class="plan-note monthly-n">Test before you commit</div>
-        <div class="plan-note annual-n" style="display:none">≈ ₹416/mo · 2 months free</div>
-        <button class="plan-btn ghost" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Start Free Trial</button>
-        <div class="plan-divider"></div>
-        <div class="plan-limits">
-          <div class="limit-row"><span class="limit-key">Flats</span><span class="limit-val">Up to 20</span></div>
-          <div class="limit-row"><span class="limit-key">Messages / mo</span><span class="limit-val">500</span></div>
-          <div class="limit-row"><span class="limit-key">Hosting</span><span class="limit-val">Shared</span></div>
-        </div>
-        <ul class="plan-features">
-          <li class="yes"><span class="chk"></span>WhatsApp Bot</li>
-          <li class="yes"><span class="chk"></span>Maintenance Payments (Razorpay)</li>
-          <li class="yes"><span class="chk"></span>Complaint Management</li>
-          <li class="yes"><span class="chk"></span>Auto Reminders</li>
-          <li class="no"><span class="chk"></span>Custom Society Branding</li>
-          <li class="no"><span class="chk"></span>Admin Dashboard</li>
-          <li class="no"><span class="chk"></span>Your Own Razorpay Account</li>
-        </ul>
-      </div>
-
-      <!-- Starter -->
-      <div class="plan">
-        <div class="plan-color" style="background:#25D366"></div>
-        <div class="plan-name" style="color:#25D366">Starter</div>
-        <div class="plan-tagline">Growing Societies</div>
-        <div class="plan-price monthly-p" style="color:#25D366">₹1,499<span>/mo</span></div>
-        <div class="plan-price annual-p" style="color:#25D366;display:none">₹14,990<span>/yr</span></div>
-        <div class="plan-note monthly-n">+ ₹999 one-time setup</div>
-        <div class="plan-note annual-n" style="display:none">Setup included · ≈ ₹1,249/mo</div>
-        <button class="plan-btn primary" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Get Started</button>
-        <div class="plan-divider"></div>
-        <div class="plan-limits">
-          <div class="limit-row"><span class="limit-key">Flats</span><span class="limit-val">Up to 100</span></div>
-          <div class="limit-row"><span class="limit-key">Messages / mo</span><span class="limit-val">2,000</span></div>
-          <div class="limit-row"><span class="limit-key">Hosting</span><span class="limit-val">Shared</span></div>
-        </div>
-        <ul class="plan-features">
-          <li class="yes"><span class="chk"></span>WhatsApp Bot</li>
-          <li class="yes"><span class="chk"></span>Maintenance Payments (Razorpay)</li>
-          <li class="yes"><span class="chk"></span>Complaint Management</li>
-          <li class="yes"><span class="chk"></span>Auto Reminders</li>
-          <li class="yes"><span class="chk"></span>Custom Society Branding</li>
-          <li class="no"><span class="chk"></span>Admin Dashboard</li>
-          <li class="yes"><span class="chk"></span>Your Own Razorpay Account</li>
-        </ul>
-      </div>
-
-      <!-- Pro -->
-      <div class="plan pro">
-        <div class="plan-badge">MOST POPULAR</div>
-        <div class="plan-color" style="background:#F5A623"></div>
-        <div class="plan-name" style="color:#F5A623">Pro</div>
-        <div class="plan-tagline">Large Societies</div>
-        <div class="plan-price monthly-p" style="color:#F5A623">₹3,499<span>/mo</span></div>
-        <div class="plan-price annual-p" style="color:#F5A623;display:none">₹34,990<span>/yr</span></div>
-        <div class="plan-note monthly-n">+ ₹1,999 one-time setup</div>
-        <div class="plan-note annual-n" style="display:none">Setup included · ≈ ₹2,916/mo</div>
-        <button class="plan-btn primary" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Get Started</button>
-        <div class="plan-divider"></div>
-        <div class="plan-limits">
-          <div class="limit-row"><span class="limit-key">Flats</span><span class="limit-val">Up to 500</span></div>
-          <div class="limit-row"><span class="limit-key">Messages / mo</span><span class="limit-val">10,000</span></div>
-          <div class="limit-row"><span class="limit-key">Hosting</span><span class="limit-val">Dedicated</span></div>
-        </div>
-        <ul class="plan-features">
-          <li class="yes"><span class="chk"></span>WhatsApp Bot</li>
-          <li class="yes"><span class="chk"></span>Maintenance Payments (Razorpay)</li>
-          <li class="yes"><span class="chk"></span>Complaint Management</li>
-          <li class="yes"><span class="chk"></span>Auto Reminders</li>
-          <li class="yes"><span class="chk"></span>Custom Society Branding</li>
-          <li class="yes"><span class="chk"></span>Admin Dashboard</li>
-          <li class="yes"><span class="chk"></span>Your Own Razorpay Account</li>
-        </ul>
-      </div>
-
-      <!-- Enterprise -->
-      <div class="plan">
-        <div class="plan-color" style="background:#E67E22"></div>
-        <div class="plan-name" style="color:#E67E22">Enterprise</div>
-        <div class="plan-tagline">PMCs &amp; Developers</div>
-        <div class="plan-price" style="color:#E67E22;font-size:1.9rem;margin-top:0.2rem">Custom</div>
-        <div class="plan-note">Talk to us</div>
-        <button class="plan-btn outlined" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Contact Sales</button>
-        <div class="plan-divider"></div>
-        <div class="plan-limits">
-          <div class="limit-row"><span class="limit-key">Flats</span><span class="limit-val">Unlimited</span></div>
-          <div class="limit-row"><span class="limit-key">Messages / mo</span><span class="limit-val">Unlimited</span></div>
-          <div class="limit-row"><span class="limit-key">Hosting</span><span class="limit-val">Dedicated+</span></div>
-        </div>
-        <ul class="plan-features">
-          <li class="yes"><span class="chk"></span>Everything in Pro</li>
-          <li class="yes"><span class="chk"></span>Multi-society support</li>
-          <li class="yes"><span class="chk"></span>Dedicated account manager</li>
-          <li class="yes"><span class="chk"></span>Custom payment gateway</li>
-          <li class="yes"><span class="chk"></span>SLA 99.9% uptime</li>
-          <li class="yes"><span class="chk"></span>Custom feature development</li>
-          <li class="yes"><span class="chk"></span>Priority support</li>
-        </ul>
-      </div>
+    <div class="plans reveal">
+      <div class="pb"><div class="pn" style="color:#2980B9">Trial</div><div class="pt">Developer / Small Society</div><div class="pp mp" style="color:#2980B9">₹499<sub>/mo</sub></div><div class="pp ap" style="color:#2980B9;display:none">₹4,990<sub>/yr</sub></div><div class="pnote mn">Test before you commit</div><div class="pnote an" style="display:none">≈ ₹416/mo · 2 months free</div><button class="pa out" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Start Trial</button><div class="psep"></div><div class="plim"><div class="plr"><span class="plk">Flats</span><span class="plv">Up to 20</span></div><div class="plr"><span class="plk">Messages/mo</span><span class="plv">500</span></div><div class="plr"><span class="plk">Hosting</span><span class="plv">Shared</span></div></div><ul class="pfl"><li class="y"><span class="c"></span>WhatsApp Bot</li><li class="y"><span class="c"></span>Maintenance Payments</li><li class="y"><span class="c"></span>Complaint Management</li><li class="y"><span class="c"></span>Visitor Management</li><li class="y"><span class="c"></span>Auto Reminders</li><li class="n"><span class="c"></span>Custom Branding</li><li class="n"><span class="c"></span>Admin Dashboard</li></ul></div>
+      <div class="pb"><div class="pn" style="color:var(--green)">Starter</div><div class="pt">Growing Societies</div><div class="pp mp" style="color:var(--green)">₹1,499<sub>/mo</sub></div><div class="pp ap" style="color:var(--green);display:none">₹14,990<sub>/yr</sub></div><div class="pnote mn">+ ₹999 one-time setup</div><div class="pnote an" style="display:none">Setup included · ≈ ₹1,249/mo</div><button class="pa sol" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Get Started</button><div class="psep"></div><div class="plim"><div class="plr"><span class="plk">Flats</span><span class="plv">Up to 100</span></div><div class="plr"><span class="plk">Messages/mo</span><span class="plv">2,000</span></div><div class="plr"><span class="plk">Hosting</span><span class="plv">Shared</span></div></div><ul class="pfl"><li class="y"><span class="c"></span>WhatsApp Bot</li><li class="y"><span class="c"></span>Maintenance Payments</li><li class="y"><span class="c"></span>Complaint Management</li><li class="y"><span class="c"></span>Visitor Management</li><li class="y"><span class="c"></span>Auto Reminders</li><li class="y"><span class="c"></span>Custom Branding</li><li class="n"><span class="c"></span>Admin Dashboard</li></ul></div>
+      <div class="pb feat"><div class="pn">Pro ★</div><div class="pt">Large Societies</div><div class="pp mp">₹3,499<sub>/mo</sub></div><div class="pp ap" style="display:none">₹34,990<sub>/yr</sub></div><div class="pnote mn">+ ₹1,999 one-time setup</div><div class="pnote an" style="display:none">Setup included · ≈ ₹2,916/mo</div><button class="pa wh" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Get Started</button><div class="psep"></div><div class="plim"><div class="plr"><span class="plk">Flats</span><span class="plv">Up to 500</span></div><div class="plr"><span class="plk">Messages/mo</span><span class="plv">10,000</span></div><div class="plr"><span class="plk">Hosting</span><span class="plv">Dedicated</span></div></div><ul class="pfl"><li class="y"><span class="c"></span>WhatsApp Bot</li><li class="y"><span class="c"></span>Maintenance Payments</li><li class="y"><span class="c"></span>Complaint Management</li><li class="y"><span class="c"></span>Visitor Management</li><li class="y"><span class="c"></span>Auto Reminders</li><li class="y"><span class="c"></span>Custom Branding</li><li class="y"><span class="c"></span>Admin Dashboard</li></ul></div>
+      <div class="pb"><div class="pn" style="color:var(--ochre)">Enterprise</div><div class="pt">PMCs & Developers</div><div class="pp" style="color:var(--ochre);font-size:1.9rem;margin-top:.2rem">Custom</div><div class="pnote">Talk to us</div><button class="pa go" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Contact Sales</button><div class="psep"></div><div class="plim"><div class="plr"><span class="plk">Flats</span><span class="plv">Unlimited</span></div><div class="plr"><span class="plk">Messages/mo</span><span class="plv">Unlimited</span></div><div class="plr"><span class="plk">Hosting</span><span class="plv">Dedicated+</span></div></div><ul class="pfl"><li class="y"><span class="c"></span>Everything in Pro</li><li class="y"><span class="c"></span>Multi-society support</li><li class="y"><span class="c"></span>Dedicated manager</li><li class="y"><span class="c"></span>Custom payment gateway</li><li class="y"><span class="c"></span>99.9% uptime SLA</li><li class="y"><span class="c"></span>Custom feature dev</li><li class="y"><span class="c"></span>Priority support</li></ul></div>
     </div>
   </div>
 </section>
 
 <!-- PERPETUAL -->
-<section>
-  <div class="perp-section">
-    <div class="section-tag">Perpetual License</div>
-    <h2 class="section-title">Own the Code. No Monthly Fees. Ever.</h2>
-    <p class="section-sub">Buy once, self-host on any server, keep the source code and all future control.</p>
-    <div class="perp-grid">
-      <div class="perp-card">
-        <div class="perp-head">
-          <div class="perp-name">Solo License</div>
-          <span class="perp-tag tag-blue">1 DEPLOYMENT</span>
-        </div>
-        <div class="perp-price" style="color:#3498DB">₹24,999</div>
-        <div class="perp-price-note">One-time · No recurring fees</div>
-        <button class="perp-btn solo" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Buy Solo License →</button>
-        <ul class="perp-features">
-          <li><span class="chk">✓</span>Full source code (GitHub access)</li>
-          <li><span class="chk">✓</span>Deploy to 1 server, forever</li>
-          <li><span class="chk">✓</span>Self-host on Render, Railway, or any VPS</li>
-          <li><span class="chk">✓</span>No dependency on us post-purchase</li>
-          <li><span class="chk">✓</span>6 months of updates included</li>
-          <li><span class="chk">✓</span>1 × 2hr onboarding + setup session</li>
-          <li><span class="chk">✓</span>AMC: ₹4,999/yr for continued updates</li>
-        </ul>
-      </div>
-      <div class="perp-card agency">
-        <div class="perp-head">
-          <div class="perp-name">Agency License</div>
-          <span class="perp-tag tag-gold">BEST ROI</span>
-        </div>
-        <div class="perp-price" style="color:var(--gold)">₹74,999</div>
-        <div class="perp-price-note">One-time · White-label · Unlimited deployments</div>
-        <button class="perp-btn agency-btn" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Buy Agency License →</button>
-        <ul class="perp-features">
-          <li class="gold"><span class="chk">✓</span>Full source code (GitHub access)</li>
-          <li class="gold"><span class="chk">✓</span><strong>Unlimited deployments</strong></li>
-          <li class="gold"><span class="chk">✓</span><strong>White-label rights</strong> — your brand</li>
-          <li class="gold"><span class="chk">✓</span><strong>Resell to clients</strong> — keep 100% revenue</li>
-          <li class="gold"><span class="chk">✓</span>12 months of updates included</li>
-          <li class="gold"><span class="chk">✓</span>3 × setup sessions with priority support</li>
-          <li class="gold"><span class="chk">✓</span>First ₹10,000 of customisation free</li>
-          <li class="gold"><span class="chk">✓</span>AMC: ₹9,999/yr for continued updates</li>
-        </ul>
-        <div class="roi-box">
-          <p>💡 <strong>ROI Calculator:</strong> Deploy to 10 societies @ ₹1,000/mo each → ₹10,000/mo revenue → Recoup investment in <strong>8 months</strong>. Pure profit after that.</p>
-        </div>
-      </div>
+<section class="sec perp-sec">
+  <div class="sec-inner">
+    <div class="stag">Perpetual License</div>
+    <h2 class="sh">Own the code.<br><em>No monthly fees. Ever.</em></h2>
+    <p class="ssub">Buy once, self-host, keep the source code and full control forever.</p>
+    <div class="pg reveal">
+      <div class="pbox"><div class="phr"><div class="pname">Solo License</div><span class="pbadge bblu">1 DEPLOYMENT</span></div><div class="ppr">₹24,999</div><div class="pno">One-time · No recurring fees</div><button class="pbtn pblu" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Buy Solo License →</button><ul class="pfeat"><li><span class="ck">✓</span>Full source code (GitHub access)</li><li><span class="ck">✓</span>Deploy to 1 server, forever</li><li><span class="ck">✓</span>Self-host: Render, Railway, or any VPS</li><li><span class="ck">✓</span>No dependency on us post-purchase</li><li><span class="ck">✓</span>6 months of updates included</li><li><span class="ck">✓</span>1 × 2hr onboarding + setup session</li><li><span class="ck">✓</span>AMC: ₹4,999/yr for updates</li></ul></div>
+      <div class="pbox gld"><div class="phr"><div class="pname">Agency License</div><span class="pbadge bcr">BEST ROI</span></div><div class="ppr">₹74,999</div><div class="pno">One-time · White-label · Unlimited deployments</div><button class="pbtn pcr" onclick="window.open('https://wa.me/919724080157?text=Book%20a%20Demo','_blank')">Buy Agency License →</button><ul class="pfeat"><li><span class="ck">✓</span>Full source code (GitHub access)</li><li><span class="ck">✓</span><strong>Unlimited deployments</strong></li><li><span class="ck">✓</span><strong>White-label rights</strong> — your brand</li><li><span class="ck">✓</span><strong>Resell to clients</strong> — keep 100% revenue</li><li><span class="ck">✓</span>12 months of updates included</li><li><span class="ck">✓</span>3 × setup sessions, priority support</li><li><span class="ck">✓</span>First ₹10,000 of customisation free</li><li><span class="ck">✓</span>AMC: ₹9,999/yr for updates</li></ul><div class="roi"><p>💡 <strong>ROI:</strong> Deploy to 10 societies @ ₹1,000/mo → ₹10,000/mo revenue → investment recovered in <strong>8 months</strong>. Pure profit after.</p></div></div>
     </div>
   </div>
 </section>
 
-<!-- COMPARISON TABLE -->
-<section class="compare-section">
-  <div class="compare-inner">
-    <div class="section-tag center">Feature Comparison</div>
-    <h2 class="section-title center">Everything at a Glance</h2>
-    <p class="section-sub center">All SaaS plans and Perpetual Licenses compared side by side.</p>
-    <div class="compare-wrap">
-      <table class="compare">
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Trial</th>
-            <th>Starter</th>
-            <th class="hl">Pro ★</th>
-            <th>Enterprise</th>
-            <th>Perpetual</th>
-          </tr>
-        </thead>
+<!-- COMPARE TABLE -->
+<section class="sec cmp-sec">
+  <div class="sec-inner">
+    <div class="stag">Comparison</div>
+    <h2 class="sh">All plans <em>at a glance.</em></h2>
+    <div class="cmpw reveal">
+      <table class="cmp">
+        <thead><tr><th>Feature</th><th>Trial</th><th>Starter</th><th class="hl">Pro ★</th><th>Enterprise</th><th>Perpetual</th></tr></thead>
         <tbody>
-          <tr><td>WhatsApp Bot</td><td class="y">✓</td><td class="y">✓</td><td class="y hl-col">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
-          <tr><td>Maintenance Payments</td><td class="y">✓</td><td class="y">✓</td><td class="y hl-col">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
-          <tr><td>Complaint Management</td><td class="y">✓</td><td class="y">✓</td><td class="y hl-col">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
-          <tr><td>Auto Reminders</td><td class="y">✓</td><td class="y">✓</td><td class="y hl-col">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
-          <tr><td>Custom Society Branding</td><td class="n">—</td><td class="y">✓</td><td class="y hl-col">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
-          <tr><td>Admin Dashboard</td><td class="n">—</td><td class="n">—</td><td class="y hl-col">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
-          <tr><td>Your Own Razorpay Account</td><td class="n">—</td><td class="y">✓</td><td class="y hl-col">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
-          <tr><td>Multi-Society Support</td><td class="n">—</td><td class="n">—</td><td class="n hl-col">—</td><td class="y">✓</td><td>Agency only</td></tr>
-          <tr><td>Dedicated Hosting</td><td>Shared</td><td>Shared</td><td class="y hl-col">✓</td><td class="y">✓</td><td>Self-host</td></tr>
-          <tr><td>Source Code Access</td><td class="n">—</td><td class="n">—</td><td class="n hl-col">—</td><td class="n">—</td><td class="y">✓</td></tr>
-          <tr><td>White-label Rights</td><td class="n">—</td><td class="n">—</td><td class="n hl-col">—</td><td class="n">—</td><td>Agency only</td></tr>
-          <tr><td>Uptime SLA</td><td>None</td><td>99%</td><td class="hl-col">99.5%</td><td>99.9%</td><td>Self-managed</td></tr>
-          <tr><td>Support Channel</td><td>Community</td><td>Email</td><td class="hl-col">Email + Chat</td><td>Dedicated</td><td>Setup sessions</td></tr>
+          <tr><td>WhatsApp Bot</td><td class="y">✓</td><td class="y">✓</td><td class="y hl-c">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Maintenance Payments</td><td class="y">✓</td><td class="y">✓</td><td class="y hl-c">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Complaint Management</td><td class="y">✓</td><td class="y">✓</td><td class="y hl-c">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Visitor Management</td><td class="y">✓</td><td class="y">✓</td><td class="y hl-c">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Auto Reminders</td><td class="y">✓</td><td class="y">✓</td><td class="y hl-c">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Custom Society Branding</td><td class="n">—</td><td class="y">✓</td><td class="y hl-c">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Admin Dashboard</td><td class="n">—</td><td class="n">—</td><td class="y hl-c">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Your Own Razorpay Account</td><td class="n">—</td><td class="y">✓</td><td class="y hl-c">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Multi-Society Support</td><td class="n">—</td><td class="n">—</td><td class="n hl-c">—</td><td class="y">✓</td><td>Agency only</td></tr>
+          <tr><td>Source Code Access</td><td class="n">—</td><td class="n">—</td><td class="n hl-c">—</td><td class="n">—</td><td class="y">✓</td></tr>
+          <tr><td>Uptime SLA</td><td>None</td><td>99%</td><td class="hl-c">99.5%</td><td>99.9%</td><td>Self-managed</td></tr>
+          <tr><td>Support</td><td>Community</td><td>Email</td><td class="hl-c">Email + Chat</td><td>Dedicated</td><td>Setup sessions</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- WHY COMMITTEES LOVE IT -->
-<section>
-  <div style="max-width:1100px;margin:0 auto">
-    <div class="section-tag center">Why Committees Love SocietyBot</div>
-    <h2 class="section-title center">Treasurer saves 8–10 hrs/month on follow-ups.</h2>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem">
-        <div style="font-size:2rem;margin-bottom:1rem">🚀</div>
-        <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.5rem">30-minute setup</h3>
-        <p style="font-size:0.85rem;color:var(--gray);line-height:1.65">We set up everything for you in 30 minutes. Residents get onboarded in their first message — no group announcements, no training sessions.</p>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem">
-        <div style="font-size:2rem;margin-bottom:1rem">📱</div>
-        <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.5rem">Zero App Downloads</h3>
-        <p style="font-size:0.85rem;color:var(--gray);line-height:1.65">Every resident already has WhatsApp. No new app to install, no login to remember. Adoption is instant — even for elderly residents.</p>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem">
-        <div style="font-size:2rem;margin-bottom:1rem">🔒</div>
-        <h3 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.5rem">No WhatsApp Group Chaos</h3>
-        <p style="font-size:0.85rem;color:var(--gray);line-height:1.65">Payments and complaints go through the bot, not your group. Your group stays clean and peaceful. Every complaint gets a unique tracking ID.</p>
-      </div>
+<!-- WHY -->
+<section class="sec why-sec">
+  <div class="sec-inner">
+    <div class="stag">Why Societies Love It</div>
+    <h2 class="sh">Treasurer saves <em>8–10 hrs/month</em><br>on follow-ups.</h2>
+    <div class="wgrid reveal">
+      <div class="wcard"><div class="wnum">30m</div><span class="wico">🚀</span><h3>30-minute setup, done.</h3><p>We set up everything for you. Residents get onboarded in their very first message — no announcements, no training sessions needed.</p></div>
+      <div class="wcard"><div class="wnum">0</div><span class="wico">📱</span><h3>Zero app downloads.</h3><p>Every resident already has WhatsApp. No new app to install, no login to remember. Adoption is instant — even for elderly residents.</p></div>
+      <div class="wcard"><div class="wnum">∞</div><span class="wico">🔒</span><h3>No group chaos, ever.</h3><p>Payments, complaints and visitor approvals go through the bot — not your group. Your group stays clean. Every issue gets a unique tracking ID.</p></div>
     </div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section style="background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)" id="faq">
-  <div class="faq-section">
-    <div class="section-tag center">FAQ</div>
-    <h2 class="section-title center">Got Questions?</h2>
-    <div class="faq-grid">
-      <div class="faq-item">
-        <div class="faq-q">Do residents need to download any app?</div>
-        <div class="faq-a">No. Everything runs on WhatsApp — which residents already have. No new apps, no logins, no confusion. Adoption is instant, even for elderly residents.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">What payment gateway do residents use?</div>
-        <div class="faq-a">Razorpay — supporting UPI, Cards, Net Banking, and Wallets. On Starter and above, you connect your own Razorpay account so payments go directly to your society's account.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Can I switch from SaaS to Perpetual License later?</div>
-        <div class="faq-a">Yes. If you're on a SaaS plan and decide to purchase a Perpetual License, we'll credit up to 3 months of paid SaaS fees toward the license price.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">How long does setup take?</div>
-        <div class="faq-a">Approximately 30 minutes from booking to a live WhatsApp bot. We provide a guided onboarding session for all paid plans and handle the technical setup end-to-end.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">What happens after the update period on Perpetual?</div>
-        <div class="faq-a">Your bot keeps working — you just won't receive new features or patches automatically. You can subscribe to our Annual Maintenance Contract (AMC) for ₹4,999–9,999/yr to stay updated, or self-maintain the code.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Can the Agency License be used for my own society?</div>
-        <div class="faq-a">Absolutely. The Agency License covers unlimited deployments — whether for your own projects, client deployments, or both. White-label and resell rights are included at no extra cost.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">What data does the admin dashboard show?</div>
-        <div class="faq-a">The admin dashboard (Pro and above) shows all registered users, payment history, complaint status and resolution tracking — with the ability to update statuses and auto-notify residents via WhatsApp.</div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Is there a free trial?</div>
-        <div class="faq-a">Yes — scan the QR code or send "Hi" to +91 81470 97058 on WhatsApp to try the live demo instantly. Paid plans come with a 2-month free trial period.</div>
-      </div>
+<section class="sec faq-sec" id="faq">
+  <div class="sec-inner">
+    <div class="stag">FAQ</div>
+    <h2 class="sh">Got <em>questions?</em></h2>
+    <div class="fgrid reveal">
+      <div class="fi"><div class="fq">Do residents need to download any app?</div><div class="fa">No. Everything runs on WhatsApp — which residents already have. No new apps, no logins, no confusion. Adoption is instant, even for elderly residents.</div></div>
+      <div class="fi"><div class="fq">How does the Visitor Management System work exactly?</div><div class="fa">Guard logs visitor via WhatsApp (name, purpose, vehicle). Resident gets an instant WhatsApp notification and taps Allow or Deny. Entry is logged with timestamp and visible in the admin dashboard.</div></div>
+      <div class="fi"><div class="fq">What payment gateway do residents use?</div><div class="fa">Razorpay — supporting UPI, Cards, Net Banking, and Wallets. On Starter and above, you connect your own Razorpay account so payments land directly in your society's account.</div></div>
+      <div class="fi"><div class="fq">Can I switch from SaaS to Perpetual License later?</div><div class="fa">Yes. If you're on a SaaS plan and decide to purchase a Perpetual License, we'll credit up to 3 months of paid SaaS fees toward the license price.</div></div>
+      <div class="fi"><div class="fq">How long does setup take?</div><div class="fa">Approximately 30 minutes from booking to a live WhatsApp bot for your society. We handle the entire technical setup — you just share your society name and Razorpay details.</div></div>
+      <div class="fi"><div class="fq">Can guards who aren't tech-savvy use the system?</div><div class="fa">Yes — guards interact via simple WhatsApp messages. They send visitor details in a simple format and the bot handles the rest. Guard training takes under 10 minutes.</div></div>
+      <div class="fi"><div class="fq">Is there a free trial?</div><div class="fa">Yes — send "Hi" to +91 81470 97058 on WhatsApp to try the live demo instantly. Paid plans come with a 2-month free trial period with no credit card required.</div></div>
+      <div class="fi"><div class="fq">Can the Agency License be resold to clients?</div><div class="fa">Absolutely. The Agency License includes unlimited deployments, white-label rights, and full resell rights. You keep 100% of what you charge your clients.</div></div>
     </div>
   </div>
 </section>
 
-<!-- BOTTOM CTA -->
-<section class="cta-section">
-  <h2>Stop Chasing Dues.<br>Start Automating.</h2>
+<!-- CTA -->
+<div class="cta-fin">
+  <h2>Stop chasing dues.<br>Start automating.</h2>
   <p>Join societies across India that have modernised management — without a single app download.</p>
-  <div class="cta-btns">
-    <a class="cta-primary" href="https://wa.me/919147097058?text=Hi" target="_blank">💬 Try Free Demo on WhatsApp</a>
-    <a class="cta-ghost" href="https://wa.me/919724080157?text=Book%20a%20Demo" target="_blank">Book a Setup Call</a>
+  <div class="cbtns">
+    <a class="cwh" href="https://wa.me/919147097058?text=Hi" target="_blank">💬 Try Free Demo on WhatsApp</a>
+    <a class="cbr" href="https://wa.me/919724080157?text=Book%20a%20Demo" target="_blank">Book a Setup Call →</a>
   </div>
-  <div class="cta-note">
-    <span>2-month free trial</span> · No credit card required · Setup in 30 minutes · Just recharge to keep using
-  </div>
-</section>
+  <div class="cnote"><strong>2-month free trial</strong> · No credit card required · Setup in 30 minutes · Just recharge to keep using</div>
+</div>
 
-<!-- FOOTER -->
 <footer>
   <div>© 2025 SocietyBot · WhatsApp Automation for Indian Housing Societies</div>
-  <div style="display:flex;gap:1.5rem;align-items:center">
+  <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap">
     <a href="mailto:hello@societybot.in">hello@societybot.in</a>
     <a href="https://wa.me/919724080157" target="_blank">+91 97240 80157</a>
     <a href="https://wa.me/919147097058?text=Hi" target="_blank">Try Demo →</a>
@@ -1201,40 +704,33 @@ footer a:hover { text-decoration: underline; }
 </footer>
 
 <script>
-  /* ─── BILLING TOGGLE ─── */
-  let isAnnual = false;
-  function toggleBilling() {
-    isAnnual = !isAnnual;
-    const toggle = document.getElementById('billing-toggle');
-    const lblM = document.getElementById('lbl-m');
-    const lblA = document.getElementById('lbl-a');
-    const save = document.getElementById('annual-save');
-    toggle.classList.toggle('on', isAnnual);
-    lblM.classList.toggle('active', !isAnnual);
-    lblA.classList.toggle('active', isAnnual);
-    save.style.opacity = isAnnual ? '1' : '0.4';
-    document.querySelectorAll('.monthly-p').forEach(el => el.style.display = isAnnual ? 'none' : '');
-    document.querySelectorAll('.annual-p').forEach(el  => el.style.display = isAnnual ? '' : 'none');
-    document.querySelectorAll('.monthly-n').forEach(el => el.style.display = isAnnual ? 'none' : '');
-    document.querySelectorAll('.annual-n').forEach(el  => el.style.display = isAnnual ? '' : 'none');
-  }
+/* CURSOR */
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function anim(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim)})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='20px';cur.style.height='20px';ring.style.opacity='0'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='12px';cur.style.height='12px';ring.style.opacity='.5'});
+});
 
-  /* ─── SCROLL REVEAL ─── */
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.style.opacity = '1';
-        e.target.style.transform = 'translateY(0)';
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+/* BILLING TOGGLE */
+let ann=false;
+function toggleBilling(){
+  ann=!ann;
+  document.getElementById('bltog').classList.toggle('on',ann);
+  document.getElementById('blm').classList.toggle('on',!ann);
+  document.getElementById('bla').classList.toggle('on',ann);
+  document.getElementById('sv').style.opacity=ann?'1':'.4';
+  document.querySelectorAll('.mp').forEach(e=>e.style.display=ann?'none':'');
+  document.querySelectorAll('.ap').forEach(e=>e.style.display=ann?'':'none');
+  document.querySelectorAll('.mn').forEach(e=>e.style.display=ann?'none':'');
+  document.querySelectorAll('.an').forEach(e=>e.style.display=ann?'':'none');
+}
 
-  document.querySelectorAll('.step-card, .feat-card, .plan, .perp-card, .notif-card, .faq-item, .problem-card').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease, border-color 0.2s, box-shadow 0.2s';
-    observer.observe(el);
-  });
+/* REVEAL */
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
